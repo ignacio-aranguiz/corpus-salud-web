@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Corpus Salud — Salud integral para todos</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --violet:       #5A4A9C;
+      --violet-dark:  #3D3080;
+      --violet-deep:  #2E2460;
+      --violet-light: #EAE7F5;
+      --violet-mid:   #B8ADDF;
+      --gold:         #C9A84C;
+      --gold-light:   #E8CA70;
+      --charcoal:     #2C2C2C;
+      --charcoal-mid: #6A6A6A;
+      --bg:           #F8F6F2;
+      --white:        #FFFFFF;
+      --border:       #E4E0D8;
+      --text:         #2C2C2C;
+      --muted:        #7A7A8A;
+    }
+    html { scroll-behavior: smooth; overflow-x: clip; width: 100%; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: clip; width: 100%; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ══ NAV ══════════════════════════════════════════════ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      background: var(--white); border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden;
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 64px; max-width: 1280px; margin: 0 auto;
+    }
+    .logo-area { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .logo-icon svg { width: 30px; height: 34px; }
+    .logo-text { display: flex; flex-direction: column; line-height: 1.15; }
+    .logo-wordmark { font-family: Georgia, serif; font-size: 1.05rem; font-style: italic; color: var(--charcoal); }
+    .logo-tagline { font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--violet); font-weight: 600; }
+    .nav-links { display: flex; align-items: center; gap: 4px; }
+    .nav-links a, .nav-panel-trigger {
+      font-size: 0.81rem; font-weight: 500; color: var(--charcoal-mid);
+      padding: 8px 12px; border-radius: 5px; transition: color .2s, background .2s;
+      cursor: pointer; border: none; background: none; white-space: nowrap;
+    }
+    .nav-links a:hover, .nav-panel-trigger:hover { color: var(--violet); background: var(--violet-light); }
+    .nav-panel-trigger.active { color: var(--violet); background: var(--violet-light); }
+    .nav-divider { width: 1px; height: 20px; background: var(--border); margin: 0 6px; flex-shrink: 0; }
+    .btn-nav {
+      background: var(--violet); color: var(--white); padding: 10px 20px; border-radius: 5px;
+      font-size: 0.81rem; font-weight: 700; letter-spacing: 0.03em; transition: background .2s; white-space: nowrap;
+    }
+    .btn-nav:hover { background: var(--violet-dark); }
+
+    /* ══ NAV PANELS ════════════════════════════════════════ */
+    .nav-panel {
+      position: fixed; top: 64px; left: 0; right: 0; z-index: 290;
+      background: var(--white); border-bottom: 1px solid var(--border);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      max-height: 0; overflow: hidden; opacity: 0;
+      transition: max-height 0.35s ease, opacity 0.3s ease;
+    }
+    .nav-panel.open { max-height: 600px; opacity: 1; }
+    .nav-panel-content { max-width: 960px; margin: 0 auto; padding: 44px 48px 52px; position: relative; }
+    .panel-close {
+      position: absolute; top: 14px; right: 28px;
+      font-size: 1.3rem; color: var(--muted); cursor: pointer;
+      background: none; border: none; transition: color .2s;
+    }
+    .panel-close:hover { color: var(--charcoal); }
+    .panel-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+    .panel-section-label { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--violet); margin-bottom: 10px; }
+    .panel-h2 { font-family: Georgia, serif; font-size: 1.4rem; font-weight: 400; color: var(--charcoal); margin-bottom: 12px; line-height: 1.3; }
+    .panel-lead { font-size: 0.9rem; color: var(--muted); line-height: 1.7; }
+    .panel-blockquote {
+      border-left: 3px solid var(--gold); margin-top: 24px; padding: 18px 22px;
+      background: var(--bg); border-radius: 0 8px 8px 0;
+      font-family: Georgia, serif; font-size: 0.98rem; color: var(--charcoal); font-style: italic; line-height: 1.65;
+    }
+    .dif-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 8px; }
+    .dif-col h3 { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; padding-bottom: 9px; margin-bottom: 14px; }
+    .dif-col.no h3 { color: var(--muted); border-bottom: 2px solid var(--border); }
+    .dif-col.si h3 { color: var(--violet); border-bottom: 2px solid var(--violet); }
+    .dif-col ul { list-style: none; }
+    .dif-col li { display: flex; gap: 9px; font-size: 0.86rem; padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text); }
+    .dif-col.no li::before { content: "—"; color: #CCC; flex-shrink: 0; }
+    .dif-col.si li::before { content: "✓"; color: var(--violet); font-weight: 700; flex-shrink: 0; }
+    .faq-list { columns: 2; gap: 32px; }
+    .faq-item { break-inside: avoid; margin-bottom: 20px; }
+    .faq-q { font-weight: 600; font-size: 0.91rem; color: var(--charcoal); margin-bottom: 6px; }
+    .faq-a { font-size: 0.84rem; color: var(--muted); line-height: 1.6; }
+
+    /* ══ HERO SLIDER ════════════════════════════════════════ */
+    .slider {
+      position: relative; height: calc(100svh - 64px); min-height: 580px;
+      overflow: hidden; margin-top: 64px; width: 100%; max-width: 100vw;
+    }
+    .slide {
+      position: absolute; inset: 0; width: 100%;
+      display: flex; align-items: center; justify-content: center;
+      padding: 60px 80px 130px;
+      opacity: 0; transition: opacity 0.9s ease; pointer-events: none;
+      text-align: center; box-sizing: border-box;
+    }
+    .slide-inner { max-width: min(720px, 100%); width: 100%; }
+    .slide.active { opacity: 1; pointer-events: auto; }
+    .slide-1 { background: linear-gradient(160deg,rgba(46,36,96,.62) 0%,rgba(20,16,44,.74) 100%), url('https://drive.google.com/thumbnail?id=1fcL5zBaix16sEgwYxfWGVr8LV7hJwWE0&sz=w1920') center/cover no-repeat; }
+    .slide-2 { background: linear-gradient(160deg,rgba(36,28,80,.58) 0%,rgba(20,20,36,.70) 100%), url('https://drive.google.com/thumbnail?id=1C5zpoZ3zXLRahm-2NVMn5qXfSQedZFRV&sz=w1920') center/cover no-repeat; }
+    .slide-3 { background: linear-gradient(160deg,rgba(28,20,68,.60) 0%,rgba(44,44,44,.72) 100%), url('https://drive.google.com/thumbnail?id=1s0Ro6mMTuuHqqKx1zqpZIQr0FtDx2fgm&sz=w1920') center/cover no-repeat; }
+    .slide-inner { max-width: 720px; }
+    .slide-eyebrow {
+      display: inline-block; background: rgba(201,168,76,.15); border: 1px solid rgba(201,168,76,.35);
+      color: var(--gold-light); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.16em;
+      text-transform: uppercase; padding: 5px 18px; border-radius: 20px; margin-bottom: 24px;
+    }
+    .slide h1 {
+      font-family: Georgia, serif; font-size: clamp(1.8rem, 4.2vw, 3.1rem);
+      color: var(--white); font-weight: 400; line-height: 1.25; margin-bottom: 18px;
+    }
+    .slide h1 em { font-style: normal; color: var(--gold); }
+    .slide-sub {
+      font-size: clamp(0.95rem, 2vw, 1.05rem); color: rgba(255,255,255,.70);
+      margin-bottom: 36px; line-height: 1.65; max-width: 520px; margin-left: auto; margin-right: auto;
+    }
+    .slide-sub strong { color: var(--white); }
+    .slide-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-gold {
+      display: inline-block; background: var(--gold); color: var(--charcoal);
+      padding: 14px 32px; border-radius: 5px; font-weight: 700; font-size: 0.93rem;
+      letter-spacing: 0.02em; transition: transform .2s, box-shadow .2s, background .2s;
+    }
+    .btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,.3); }
+    .btn-ghost {
+      display: inline-block; border: 1.5px solid rgba(255,255,255,.32);
+      color: rgba(255,255,255,.78); padding: 14px 26px; border-radius: 5px;
+      font-size: 0.93rem; transition: border-color .2s, color .2s;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,.65); color: white; }
+
+    /* Arrows */
+    .slider-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.2);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 10; transition: background .2s;
+      color: white; font-size: 1rem; user-select: none;
+    }
+    .slider-arrow:hover { background: rgba(255,255,255,.22); }
+    .slider-prev { left: 24px; }
+    .slider-next { right: 24px; }
+
+    /* Dots — viven dentro del stats bar como segunda fila */
+    .slider-dots {
+      display: flex; gap: 8px; padding: 4px 0 2px;
+    }
+    .dot { width: 28px; height: 3px; border-radius: 2px; background: rgba(255,255,255,.25); cursor: pointer; transition: background .3s, width .3s; }
+    .dot.active { background: var(--gold); width: 48px; }
+
+    /* Progress bar */
+    .slider-progress { position: absolute; bottom: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--violet), var(--gold)); animation: progress 4s linear infinite; }
+    @keyframes progress { from { width: 0 } to { width: 100% } }
+
+    /* ══ STATS BAR — FIXED INSIDE SLIDER ═══════════════════ */
+    .stats-bar-slider {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 10;
+      background: rgba(12,8,28,.55); backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255,255,255,.08);
+      display: flex; flex-direction: column; align-items: center;
+      padding-bottom: 4px;
+    }
+    .stats-row { display: flex; justify-content: center; width: 100%; }
+    .stat-sl {
+      text-align: center; padding: 18px 40px;
+      border-right: 1px solid rgba(255,255,255,.08); flex: 1; max-width: 220px;
+    }
+    .stat-sl:last-child { border-right: none; }
+    .stat-sl .num { font-family: Georgia, serif; font-size: 1.6rem; color: var(--gold); font-weight: 400; line-height: 1; }
+    .stat-sl .lbl { font-size: 0.63rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,.45); margin-top: 5px; }
+
+    /* ══ SECCIONES BASE ═════════════════════════════════════ */
+    section { padding: 88px 48px; scroll-margin-top: 64px; }
+    .container { max-width: 960px; margin: 0 auto; }
+    .section-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--violet); margin-bottom: 12px; }
+    h2 { font-family: Georgia, serif; font-size: clamp(1.6rem, 3.5vw, 2.3rem); font-weight: 400; line-height: 1.28; color: var(--charcoal); margin-bottom: 14px; }
+    p.lead { font-size: 0.98rem; color: var(--muted); max-width: 520px; line-height: 1.7; }
+
+    /* ══ RESULTADOS / TESTIMONIOS ═══════════════════════════ */
+    .resultados { background: var(--white); }
+    .resultados-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+    .resultados-imagen img { width: 100%; border-radius: 10px; object-fit: cover; max-height: 440px; box-shadow: 0 8px 40px rgba(0,0,0,.1); }
+    .test-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 56px; padding-top: 48px; border-top: 1px solid var(--border); }
+    .test-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 24px; border-top: 3px solid var(--gold);
+    }
+    .test-card blockquote { font-family: Georgia, serif; font-size: 0.9rem; font-style: italic; color: var(--charcoal); line-height: 1.65; margin-bottom: 14px; }
+    .test-meta { font-size: 0.71rem; color: var(--muted); letter-spacing: 0.04em; }
+    .test-placeholder {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 130px; border: 1px dashed var(--border); border-radius: 10px;
+      font-size: 0.75rem; color: var(--muted); font-style: italic; padding: 20px; text-align: center;
+    }
+
+    /* ══ METODOLOGÍA ════════════════════════════════════════ */
+    .metodologia-visual { padding: 0; }
+    .img-overlay { min-height: 460px; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; position: relative; }
+    .img-overlay::before { content: ''; position: absolute; inset: 0; background: linear-gradient(rgba(46,36,96,.74),rgba(28,20,60,.86)); }
+    .overlay-content { position: relative; z-index: 1; text-align: center; max-width: 680px; padding: 80px 24px; }
+    .overlay-content .section-label { color: var(--gold-light); margin-bottom: 14px; }
+    .overlay-content h2 { color: var(--white); font-size: clamp(1.7rem,4vw,2.5rem); }
+
+    /* ══ JOURNEY ════════════════════════════════════════════ */
+    .journey { background: var(--violet-light); min-height: calc(100vh - 64px); display: flex; flex-direction: column; justify-content: center; scroll-margin-top: 64px; }
+    .journey-steps { display: flex; flex-wrap: wrap; gap: 0; margin-top: 48px; border: 1px solid #D4CEEC; border-radius: 10px; overflow: hidden; }
+    .step { flex: 1 1 160px; padding: 28px 16px; border-right: 1px solid #D4CEEC; background: var(--white); text-align: center; }
+    .step:last-child { border-right: none; }
+    .step-num { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: var(--violet); color: var(--white); font-family: Georgia, serif; font-size: 1rem; margin-bottom: 12px; }
+    .step h4 { font-size: 0.74rem; font-weight: 700; color: var(--charcoal); margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .step p { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+    /* ══ VISIÓN ═════════════════════════════════════════════ */
+    .vision { min-height: 500px; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; position: relative; }
+    .vision::before { content: ''; position: absolute; inset: 0; background: linear-gradient(rgba(28,20,70,.72),rgba(44,44,44,.82)); }
+    .vision-inner { position: relative; z-index: 1; text-align: center; max-width: 640px; padding: 80px 24px; }
+    .vision-inner h2 { color: var(--white); font-size: clamp(1.9rem,4vw,2.8rem); margin-bottom: 14px; }
+    .vision-inner p { font-size: 1.02rem; color: rgba(255,255,255,.68); margin-bottom: 34px; }
+
+    /* ══ CONTACTO ═══════════════════════════════════════════ */
+    #contacto { background: var(--bg); }
+    .form-wrapper { background: var(--white); border-radius: 12px; padding: 48px; margin-top: 48px; box-shadow: 0 4px 32px rgba(0,0,0,.06); max-width: 680px; }
+    .form-eyebrow { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--violet); margin-bottom: 8px; }
+    .form-wrapper h3 { font-family: Georgia, serif; font-size: 1.5rem; color: var(--charcoal); margin-bottom: 6px; }
+    .form-wrapper p.sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 28px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--charcoal); margin-bottom: 5px; }
+    label .req { color: var(--violet); margin-left: 2px; }
+    input, select, textarea { width: 100%; padding: 11px 13px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; color: var(--text); background: var(--bg); transition: border-color .2s; outline: none; }
+    input:focus, select:focus, textarea:focus { border-color: var(--violet); }
+    textarea { min-height: 88px; resize: vertical; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .radio-group { display: flex; gap: 10px; }
+    .radio-opt { display: flex; align-items: center; gap: 7px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 9px 14px; cursor: pointer; transition: border-color .2s; flex: 1; }
+    .radio-opt input[type="radio"] { width: auto; }
+    .radio-opt:has(input:checked) { border-color: var(--violet); background: rgba(90,74,156,.04); }
+    .radio-opt span { font-size: 0.85rem; }
+    .btn-submit { width: 100%; padding: 14px; background: var(--violet); color: var(--white); border: none; border-radius: 6px; cursor: pointer; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.03em; margin-top: 6px; transition: background .2s; }
+    .btn-submit:hover { background: var(--violet-dark); }
+    .form-note { font-size: 0.73rem; color: var(--muted); margin-top: 12px; text-align: center; }
+
+    /* ══ FOOTER ═════════════════════════════════════════════ */
+    footer { background: var(--charcoal); color: rgba(255,255,255,.35); text-align: center; padding: 28px 24px; font-size: 0.76rem; }
+    footer strong { color: rgba(255,255,255,.55); }
+
+    /* WhatsApp */
+    .wa-btn { position: fixed; bottom: 28px; right: 28px; z-index: 400; width: 52px; height: 52px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 18px rgba(37,211,102,.45); transition: transform .2s; }
+    .wa-btn:hover { transform: scale(1.1); }
+    .wa-btn svg { width: 26px; height: 26px; fill: white; }
+
+    /* ══ HAMBURGER ══════════════════════════════════════════ */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      width: 44px; height: 44px; align-items: center; justify-content: center;
+      background: none; border: none; cursor: pointer; padding: 8px; flex-shrink: 0;
+    }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--charcoal); border-radius: 2px; transition: transform .3s, opacity .3s; }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* ══ MOBILE MENU ═════════════════════════════════════════ */
+    .mobile-menu {
+      display: none; position: fixed;
+      top: 56px; left: 0; right: 0; bottom: 0;
+      background: var(--white); z-index: 280; overflow-y: auto;
+      flex-direction: column; padding: 8px 0 48px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mob-link {
+      font-size: 1.05rem; font-weight: 500; color: var(--charcoal);
+      padding: 18px 24px; border-bottom: 1px solid var(--border);
+      display: block; cursor: pointer; background: none; border-left: none; border-right: none; border-top: none; text-align: left; width: 100%;
+    }
+    .mob-link:last-of-type { border-bottom: 1px solid var(--border); }
+    .mob-link:active { background: var(--violet-light); }
+    .mob-cta {
+      display: block; margin: 24px 24px 0; padding: 17px;
+      background: var(--violet); color: var(--white); border-radius: 8px;
+      text-align: center; font-weight: 700; font-size: 1.05rem;
+    }
+    .mob-cta:active { background: var(--violet-dark); }
+
+    /* ══ RESPONSIVE — Mobile first ══════════════════════════
+       Principio: diseñado para iPhone/Android primero.
+       Desktop: media query min-width añade columnas y espaciados.
+    ═══════════════════════════════════════════════════════ */
+
+    /* BASE (mobile — hasta 1023px — cubre iOS Safari que reporta 980px) */
+    @media (max-width: 1023px) {
+      /* Nav */
+      .nav-inner { padding: 0 16px; height: 56px; }
+      .nav-links { display: none; }
+      .btn-nav { display: none; }
+      .logo-tagline { display: none; }
+      .hamburger { display: flex; }
+
+      /* Nav panels */
+      .nav-panel { top: 56px; }
+      .nav-panel-content { padding: 28px 20px 36px; }
+      .panel-cols { grid-template-columns: 1fr; gap: 32px; }
+      .dif-grid { grid-template-columns: 1fr; gap: 20px; }
+      .faq-list { columns: 1; }
+
+      /* Slider */
+      .slider { margin-top: 56px; height: calc(100svh - 56px); min-height: 580px; }
+      .slide { padding: 48px 24px 170px; }
+      .slide-eyebrow { font-size: 0.7rem; padding: 6px 16px; margin-bottom: 20px; }
+      .slide h1 { font-size: clamp(1.85rem, 7.5vw, 2.4rem); line-height: 1.2; margin-bottom: 16px; }
+      .slide-sub { font-size: 1rem; margin-bottom: 28px; line-height: 1.6; }
+      .slider-arrow { display: none; }
+      .slide-ctas { flex-direction: column; align-items: center; gap: 10px; }
+      .btn-gold { padding: 16px 28px; font-size: 1rem; width: 100%; max-width: 320px; text-align: center; }
+      .btn-ghost { padding: 14px 28px; font-size: 1rem; width: 100%; max-width: 320px; text-align: center; }
+
+      /* Stats bar dentro del slider — 2x2 en mobile */
+      .stats-row { flex-wrap: wrap; }
+      .stat-sl { flex: 1 1 48%; max-width: 50%; padding: 13px 10px; border-right: none; }
+      .stat-sl:nth-child(odd) { border-right: 1px solid rgba(255,255,255,.08); }
+      .stat-sl:nth-child(3), .stat-sl:nth-child(4) { border-top: 1px solid rgba(255,255,255,.08); }
+      .stat-sl .num { font-size: 1.45rem; }
+      .stat-sl .lbl { font-size: 0.65rem; margin-top: 4px; }
+
+      /* Secciones */
+      section { padding: 52px 20px; }
+
+      /* Resultados */
+      .resultados-layout { grid-template-columns: 1fr; gap: 32px; }
+      .resultados-imagen { order: -1; }
+      .resultados-imagen img { max-height: 260px; }
+      .test-grid { grid-template-columns: 1fr; gap: 14px; margin-top: 40px; padding-top: 36px; }
+
+      /* Metodología overlay */
+      .img-overlay { min-height: 320px; }
+      .overlay-content { padding: 52px 20px; }
+
+      /* Journey */
+      .journey-steps { flex-direction: column; }
+      .step { border-right: none; border-bottom: 1px solid #D4CEEC; padding: 20px 16px; }
+      .step:last-child { border-bottom: none; }
+
+      /* Visión */
+      .vision { min-height: 380px; }
+      .vision-inner { padding: 52px 20px; }
+      .vision-inner h2 { font-size: clamp(1.6rem, 5.5vw, 2.2rem); }
+
+      /* Contacto */
+      .form-wrapper { padding: 28px 18px; margin-top: 36px; }
+      .form-row { grid-template-columns: 1fr; }
+      .radio-group { flex-direction: column; }
+    }
+
+    /* DESKTOP (1024px+) — diseño base completo */
+  </style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo-area">
+      <div class="logo-icon">
+        <svg viewBox="0 0 30 34" fill="none">
+          <circle cx="17" cy="5" r="3.5" stroke="#5A4A9C" stroke-width="1.4"/>
+          <path d="M4 18 Q9 10 17 12.5 Q22 14 24 8" stroke="#3D3D3D" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+          <path d="M17 12.5 L15 22 L10 31" stroke="#3D3D3D" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+          <path d="M17 12.5 L20 22 L26 29" stroke="#3D3D3D" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <span class="logo-wordmark">corpus salud</span>
+        <span class="logo-tagline">Salud integral para todos</span>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="#journey">Cómo funciona</a>
+      <button class="nav-panel-trigger" onclick="togglePanel('panel-nosotros',this)">¿Por qué nosotros? ▾</button>
+      <a href="#resultados">Resultados comprobados</a>
+      <button class="nav-panel-trigger" onclick="togglePanel('panel-faq',this)">Resuelve tus dudas ▾</button>
+      <div class="nav-divider"></div>
+      <a href="#contacto" class="btn-nav">Solicitar evaluación</a>
+    </div>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ══ MOBILE MENU ══ -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#journey" class="mob-link" onclick="closeMobileMenu()">Cómo funciona</a>
+  <button class="mob-link" onclick="closeMobileMenu(); togglePanel('panel-nosotros')">¿Por qué nosotros?</button>
+  <a href="#resultados" class="mob-link" onclick="closeMobileMenu()">Resultados comprobados</a>
+  <button class="mob-link" onclick="closeMobileMenu(); togglePanel('panel-faq')">Resuelve tus dudas</button>
+  <a href="#contacto" class="mob-cta" onclick="closeMobileMenu()">Solicitar evaluación →</a>
+</div>
+
+<!-- ══ PANEL: ¿Por qué nosotros? ══ -->
+<div class="nav-panel" id="panel-nosotros">
+  <button class="panel-close" onclick="togglePanel('panel-nosotros')">✕</button>
+  <div class="nav-panel-content">
+    <div class="panel-cols">
+      <div>
+        <div class="panel-section-label">Nuestra propuesta de valor</div>
+        <div class="panel-h2">Identificamos y resolvemos la causa multifactorial de tu dolor.</div>
+        <p class="panel-lead">No tratamos síntomas. Evaluamos biomecánica, hábitos y conciencia corporal para devolverte autonomía y longevidad funcional.</p>
+        <div class="panel-blockquote">"Resolvemos tu dolor un 20% más rápido que con la terapia convencional, con una metodología propia que convierte al paciente en protagonista de su recuperación."</div>
+      </div>
+      <div>
+        <div class="panel-section-label">Qué nos hace distintos</div>
+        <div class="panel-h2" style="margin-bottom:20px;">No es más de lo mismo.</div>
+        <div class="dif-grid">
+          <div class="dif-col no"><h3>No hacemos</h3><ul><li>Tratar síntomas aislados</li><li>Maximizar sesiones</li><li>Derivar sin agotar opciones</li><li>Crear dependencia</li></ul></div>
+          <div class="dif-col si"><h3>Hacemos</h3><ul><li>Causa multifactorial</li><li>Evaluación diferencial</li><li>Paciente protagonista</li><li>Alta tasa de éxito</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PANEL: Resuelve tus dudas ══ -->
+<div class="nav-panel" id="panel-faq">
+  <button class="panel-close" onclick="togglePanel('panel-faq')">✕</button>
+  <div class="nav-panel-content">
+    <div class="panel-section-label">Preguntas frecuentes</div>
+    <div class="panel-h2" style="margin-bottom:28px;">Lo que suelen preguntar.</div>
+    <div class="faq-list">
+      <div class="faq-item"><div class="faq-q">¿Cuántas sesiones necesito?</div><div class="faq-a">La mayoría ve resultados entre la sesión 3 y 5. Desde la sesión 4, muchos continúan de forma online.</div></div>
+      <div class="faq-item"><div class="faq-q">¿La evaluación inicial tiene costo?</div><div class="faq-a">En esta etapa es sin costo. Queremos entender tu situación antes de cualquier compromiso.</div></div>
+      <div class="faq-item"><div class="faq-q">¿Funciona para adultos mayores?</div><div class="faq-a">Sí. Casi la mitad de nuestros pacientes son adultos mayores. Adaptamos el protocolo a cada etapa de la vida.</div></div>
+      <div class="faq-item"><div class="faq-q">¿Qué llevo a la primera sesión?</div><div class="faq-a">Exámenes o imágenes previas si los tienes, y ropa cómoda. Nada más.</div></div>
+      <div class="faq-item"><div class="faq-q">¿Hay atención online?</div><div class="faq-a">Sí. Después de las primeras sesiones presenciales, la mayoría puede continuar en formato online.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDER ══ -->
+<div class="slider" id="slider">
+  <div class="slide slide-1 active">
+    <div class="slide-inner">
+      <div class="slide-eyebrow">Salud integral para todos</div>
+      <h1>¿Conoces a alguien que vive con dolor<br>y ya se resignó a que <em>así va a ser su vida</em>?</h1>
+      <p class="slide-sub"><strong>Resolvemos la causa real de tu dolor.</strong><br>Sin cirugía. Con método. Recuperando lo que más te importa hacer.</p>
+      <div class="slide-ctas"><a href="#contacto" class="btn-gold">Solicitar evaluación inicial →</a><a href="#metodo" class="btn-ghost">Cómo funciona</a></div>
+    </div>
+  </div>
+  <div class="slide slide-2">
+    <div class="slide-inner">
+      <div class="slide-eyebrow">Nuestra metodología</div>
+      <h1>Un método que te <em>empodera</em>,<br>no que te hace depender.</h1>
+      <p class="slide-sub"><strong>Evaluación multifactorial. Intervención estructurada.</strong><br>Aprendes sobre tu cuerpo. Sales con autonomía real.</p>
+      <div class="slide-ctas"><a href="#contacto" class="btn-gold">Comenzar hoy →</a><a href="#metodo" class="btn-ghost">Ver el proceso</a></div>
+    </div>
+  </div>
+  <div class="slide slide-3">
+    <div class="slide-inner">
+      <div class="slide-eyebrow">Longevidad activa</div>
+      <h1>Tu vida sin límites,<br>a <em>cualquier edad</em>.</h1>
+      <p class="slide-sub"><strong>Comienza hoy con una evaluación inicial sin costo.</strong><br>Más de 120 pacientes ya recuperaron su funcionalidad.</p>
+      <div class="slide-ctas"><a href="#contacto" class="btn-gold">Reservar evaluación gratuita →</a><a href="#resultados" class="btn-ghost">Ver resultados</a></div>
+    </div>
+  </div>
+
+  <button class="slider-arrow slider-prev" onclick="goToSlide((current-1+3)%3)">&#8592;</button>
+  <button class="slider-arrow slider-next" onclick="goToSlide((current+1)%3)">&#8594;</button>
+  <!-- Stats bar fija dentro del slider — incluye dots como segunda fila -->
+  <div class="stats-bar-slider">
+    <div class="stats-row">
+      <div class="stat-sl"><div class="num">+10</div><div class="lbl">Años de experiencia</div></div>
+      <div class="stat-sl"><div class="num">20%</div><div class="lbl">Más rápido que la terapia convencional</div></div>
+      <div class="stat-sl"><div class="num">+120</div><div class="lbl">Pacientes tratados</div></div>
+      <div class="stat-sl"><div class="num">0</div><div class="lbl">Cirugías sin agotar alternativas</div></div>
+    </div>
+    <div class="slider-dots">
+      <div class="dot active" onclick="goToSlide(0)"></div>
+      <div class="dot" onclick="goToSlide(1)"></div>
+      <div class="dot" onclick="goToSlide(2)"></div>
+    </div>
+  </div>
+
+  <div class="slider-progress" id="progress-bar"></div>
+</div>
+
+<!-- ══ RESULTADOS ══ -->
+<section class="resultados" id="resultados">
+  <div class="container">
+    <div class="resultados-layout">
+      <div>
+        <div class="section-label">Resultados reales</div>
+        <h2>Pacientes que recuperaron su vida.</h2>
+        <p class="lead">La mayoría llega tras años de tratamientos que alivian temporalmente pero no resuelven. El problema es que nadie buscó la causa real.</p>
+      </div>
+      <div class="resultados-imagen">
+        <img src="https://drive.google.com/thumbnail?id=1cfOSXAv9leHFaRxj5fmL9x9AK4knz0M1&sz=w1200" alt="Evaluación biomecánica Corpus Salud" />
+      </div>
+    </div>
+    <div class="test-grid">
+      <div class="test-card">
+        <blockquote>"Llevaba 3 años con dolor lumbar crónico. En 6 sesiones pude volver a correr. Nadie antes había buscado la causa de verdad."</blockquote>
+        <div class="test-meta">— Rodrigo M., 47 años · Lumbalgia crónica</div>
+      </div>
+      <div class="test-placeholder">Testimonio pendiente<br>Solicitar a Cris caso real anonimizado</div>
+      <div class="test-placeholder">Testimonio pendiente<br>Solicitar a Cris caso real anonimizado</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ METODOLOGÍA ══ -->
+<section class="metodologia-visual" id="metodo">
+  <div class="img-overlay" style="background-image:url('https://drive.google.com/thumbnail?id=1C5zpoZ3zXLRahm-2NVMn5qXfSQedZFRV&sz=w1920')">
+    <div class="overlay-content">
+      <p class="section-label">Nuestra metodología</p>
+      <h2>Un método que te empodera,<br>no que te hace depender.</h2>
+    </div>
+  </div>
+</section>
+
+<!-- ══ JOURNEY ══ -->
+<section class="journey" id="journey">
+  <div class="container">
+    <div class="section-label">Cómo funciona</div>
+    <h2>Un proceso claro,<br>desde el primer día.</h2>
+    <div class="journey-steps">
+      <div class="step"><div class="step-num">1</div><h4>Crisis</h4><p>Llegas por dolor. Te escuchamos sin apuro.</p></div>
+      <div class="step"><div class="step-num">2</div><h4>Diagnóstico</h4><p>Evaluación exhaustiva. Identificamos la causa real.</p></div>
+      <div class="step"><div class="step-num">3</div><h4>Tratamiento</h4><p>Metodología Corpus. Intervención estructurada y medible.</p></div>
+      <div class="step"><div class="step-num">4</div><h4>Autonomía</h4><p>Aprendes sobre tu cuerpo. Dejas de depender.</p></div>
+      <div class="step"><div class="step-num">5</div><h4>Longevidad</h4><p>Vuelves a hacer lo que amas, por mucho más tiempo.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ VISIÓN ══ -->
+<section class="vision" style="background-image:url('https://drive.google.com/thumbnail?id=1s0Ro6mMTuuHqqKx1zqpZIQr0FtDx2fgm&sz=w1920')">
+  <div class="vision-inner">
+    <h2>Tu vida sin límites, a cualquier edad.</h2>
+    <p>Comienza hoy con una evaluación inicial sin costo.</p>
+    <a href="#contacto" class="btn-gold">Solicitar evaluación →</a>
+  </div>
+</section>
+
+<!-- ══ CONTACTO ══ -->
+<section id="contacto">
+  <div class="container">
+    <div class="section-label">Primer paso</div>
+    <h2>Cuéntanos tu caso.<br>El resto lo hacemos nosotros.</h2>
+    <p class="lead">Completa el formulario y Cristóbal te contactará en menos de 24 horas para una evaluación inicial sin costo.</p>
+    <div class="form-wrapper">
+      <div class="form-eyebrow">Formulario de evaluación</div>
+      <h3>Cuéntanos sobre ti</h3>
+      <p class="sub">Toda la información es confidencial y solo la verá el equipo Corpus.</p>
+      <form id="intake-form">
+        <div class="form-group"><label>¿Quién completa este formulario? <span class="req">*</span></label><div class="radio-group"><label class="radio-opt"><input type="radio" name="esPaciente" value="si"><span>Soy el/la paciente</span></label><label class="radio-opt"><input type="radio" name="esPaciente" value="no"><span>Lo hago por un familiar</span></label></div></div>
+        <div class="form-row"><div class="form-group"><label>Nombre completo <span class="req">*</span></label><input type="text" name="nombre" placeholder="Ej: María González"></div><div class="form-group"><label>Teléfono <span class="req">*</span></label><input type="tel" name="telefono" placeholder="+56 9 XXXX XXXX"></div></div>
+        <div class="form-group"><label>Email <span class="req">*</span></label><input type="email" name="email" placeholder="tu@email.com"></div>
+        <div class="form-group"><label>Zona de dolor <span class="req">*</span></label><select name="zonaDolor"><option value="" disabled selected>Selecciona</option><option>Columna Lumbar / Espalda baja</option><option>Pelvis / Cadera</option><option>Rodilla</option><option>Múltiples zonas</option><option>Otro</option></select></div>
+        <div class="form-group"><label>¿Cuánto tiempo llevas con este dolor? <span class="req">*</span></label><select name="tiempoDolor"><option value="" disabled selected>Selecciona</option><option>Menos de 3 meses</option><option>3 a 12 meses</option><option>1 a 3 años</option><option>Más de 3 años</option></select></div>
+        <div class="form-group"><label>Tratamientos previos</label><input type="text" name="tratamientosPrevios" placeholder="Ej: kinesiología, masajes, médico..."></div>
+        <div class="form-group"><label>¿Qué es lo que más te duele no poder hacer? <span class="req">*</span></label><textarea name="quePierdes" placeholder="Ej: Jugar con mis nietos, caminar sin dolor, dormir bien..."></textarea></div>
+        <div class="form-group"><label>¿Cómo llegaste a Corpus Salud?</label><select name="comoNosConocio"><option value="" disabled selected>Selecciona</option><option>Recomendación de amigo o familiar</option><option>Redes sociales</option><option>Google</option><option>Recomendación médica</option><option>Otro</option></select></div>
+        <button class="btn-submit" id="submit-btn" type="submit">Enviar solicitud de evaluación →</button>
+        <p class="form-note">Sin costo. Sin compromiso. Cristóbal te contactará en menos de 24 horas.</p>
+      </form>
+      <div id="success-msg" style="display:none; text-align:center; padding: 40px 0;">
+        <p style="font-family:Georgia,serif; font-size:1.3rem; color:var(--charcoal); margin-bottom:10px;">¡Recibimos tu solicitud!</p>
+        <p style="font-size:0.9rem; color:var(--muted);">Cristóbal te contactará en menos de 24 horas. Revisa tu email.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><p><strong>Corpus Salud</strong> — Salud integral para todos</p><p style="margin-top:6px;">Toda la información entregada es estrictamente confidencial.</p></footer>
+
+<a href="https://wa.me/56953719944" class="wa-btn" title="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script>
+  // Slider
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.dot');
+  const pb = document.getElementById('progress-bar');
+  let timer;
+
+  function goToSlide(n) {
+    slides[current].classList.remove('active'); dots[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active'); dots[current].classList.add('active');
+    pb.style.animation = 'none'; pb.offsetHeight; pb.style.animation = 'progress 4s linear infinite';
+    clearInterval(timer); timer = setInterval(() => goToSlide(current + 1), 4000);
+  }
+  timer = setInterval(() => goToSlide(current + 1), 4000);
+
+  // Swipe en mobile
+  let touchX = 0;
+  const sliderEl = document.getElementById('slider');
+  sliderEl.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+  sliderEl.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 40) goToSlide(dx < 0 ? current + 1 : current - 1);
+  });
+  sliderEl.addEventListener('mouseenter', () => clearInterval(timer));
+  sliderEl.addEventListener('mouseleave', () => { timer = setInterval(() => goToSlide(current + 1), 4000); });
+
+  // Mobile menu
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const btn = document.getElementById('hamburger');
+    menu.classList.toggle('open');
+    btn.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  function closeMobileMenu() {
+    document.getElementById('mobile-menu').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Nav panels
+  function togglePanel(id, el) {
+    const p = document.getElementById(id);
+    const open = p.classList.contains('open');
+    document.querySelectorAll('.nav-panel').forEach(x => x.classList.remove('open'));
+    document.querySelectorAll('.nav-panel-trigger').forEach(x => x.classList.remove('active'));
+    if (!open) { p.classList.add('open'); if (el) el.classList.add('active'); }
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.nav-panel') && !e.target.closest('.nav-panel-trigger') && !e.target.closest('.panel-close')) {
+      document.querySelectorAll('.nav-panel').forEach(x => x.classList.remove('open'));
+      document.querySelectorAll('.nav-panel-trigger').forEach(x => x.classList.remove('active'));
+    }
+  });
+
+  // Form submission
+  var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMIG1x9O-QpoKyQEEqG7SkLWDelmHGI_oqK4pm-PHSvwic7tTavi9zZbBkK8v0UVOX/exec";
+  document.getElementById("intake-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    var btn = document.getElementById("submit-btn");
+    btn.disabled = true;
+    btn.textContent = "Enviando...";
+    var form = e.target;
+    var data = {
+      esPaciente:          (form.querySelector('input[name="esPaciente"]:checked') || {}).value || "",
+      nombre:              form.nombre.value,
+      telefono:            form.telefono.value,
+      email:               form.email.value,
+      zonaDolor:           form.zonaDolor.value,
+      tiempoDolor:         form.tiempoDolor.value,
+      tratamientosPrevios: form.tratamientosPrevios.value,
+      quePierdes:          form.quePierdes.value,
+      comoNosConocio:      form.comoNosConocio.value
+    };
+    fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(data) })
+      .then(function() {
+        form.style.display = "none";
+        document.getElementById("success-msg").style.display = "block";
+      })
+      .catch(function() {
+        btn.disabled = false;
+        btn.textContent = "Enviar solicitud de evaluación →";
+        alert("Hubo un error al enviar. Por favor intenta nuevamente.");
+      });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Corpus Salud — Validación clínica M2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --violet: #5A4A9C; --violet-dark: #3D3080; --violet-light: #EAE7F5;
+      --gold: #C9A84C; --gold-bg: #FEF6E4; --gold-text: #8A6A1A;
+      --charcoal: #2C2C2C; --muted: #7A7A8A; --bg: #F8F6F2;
+      --white: #FFFFFF; --border: #E4E0D8;
+    }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--charcoal); line-height: 1.6; }
+
+    /* ── Header ── */
+    .header { background: var(--white); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 10; }
+    .header svg { width: 22px; height: 26px; flex-shrink: 0; }
+    .header-wordmark { font-family: Georgia, serif; font-size: 0.95rem; font-style: italic; color: var(--charcoal); }
+    .header-sub { font-size: 0.55rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--violet); font-weight: 600; display: block; }
+
+    /* ── Container ── */
+    .wrap { max-width: 620px; margin: 0 auto; padding: 28px 20px 100px; }
+
+    /* ── Progress ── */
+    .progress-track { background: var(--border); border-radius: 4px; height: 5px; margin-bottom: 8px; }
+    .progress-fill { background: linear-gradient(90deg, var(--violet), var(--gold)); height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+    .step-label { font-size: 0.72rem; color: var(--muted); text-align: right; margin-bottom: 24px; }
+
+    /* ── Step ── */
+    .step { display: none; }
+    .step.active { display: block; }
+    .step-title { font-family: Georgia, serif; font-size: 1.25rem; color: var(--charcoal); margin-bottom: 6px; }
+    .step-desc { font-size: 0.86rem; color: var(--muted); margin-bottom: 24px; line-height: 1.65; }
+
+    /* ── Question card ── */
+    .q { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 12px; }
+    .q.q-confirm { border-left: 3px solid var(--violet); }
+    .q.q-input  { border-left: 3px solid var(--gold); }
+    .q-badge { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; display: inline-block; padding: 2px 9px; border-radius: 20px; margin-bottom: 8px; }
+    .badge-c { background: var(--violet-light); color: var(--violet); }
+    .badge-i { background: var(--gold-bg); color: var(--gold-text); }
+    .q-text { font-size: 0.93rem; font-weight: 600; color: var(--charcoal); margin-bottom: 3px; }
+    .q-hint { font-size: 0.79rem; color: var(--muted); margin-bottom: 13px; }
+
+    /* ── Radio ── */
+    .radio-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .r-opt { display: flex; align-items: center; gap: 7px; cursor: pointer; padding: 9px 14px; border: 1.5px solid var(--border); border-radius: 8px; flex: 1; min-width: 120px; transition: border-color .18s, background .18s; user-select: none; }
+    .r-opt input { accent-color: var(--violet); }
+    .r-opt span { font-size: 0.86rem; font-weight: 500; }
+    .r-opt:has(input:checked) { border-color: var(--violet); background: var(--violet-light); }
+
+    /* ── Checkboxes ── */
+    .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .c-opt { display: flex; align-items: center; gap: 7px; cursor: pointer; padding: 9px 14px; border: 1.5px solid var(--border); border-radius: 8px; transition: border-color .18s, background .18s; user-select: none; }
+    .c-opt input { accent-color: var(--violet); }
+    .c-opt span { font-size: 0.85rem; }
+    .c-opt:has(input:checked) { border-color: var(--violet); background: var(--violet-light); }
+
+    /* ── Textarea ── */
+    textarea, .text-input { width: 100%; border: 1.5px solid var(--border); border-radius: 8px; padding: 11px 14px; font-family: inherit; font-size: 0.86rem; color: var(--charcoal); resize: vertical; min-height: 80px; margin-top: 10px; transition: border-color .18s; background: var(--white); }
+    textarea:focus, .text-input:focus { outline: none; border-color: var(--violet); }
+    .correction { display: none; }
+    .correction.visible { display: block; }
+    .text-input { min-height: unset; height: 42px; resize: none; }
+
+    /* ── Nav ── */
+    .nav { display: flex; gap: 10px; margin-top: 28px; }
+    .btn-prev { flex: 1; padding: 13px; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; color: var(--charcoal); transition: background .18s; }
+    .btn-prev:hover { background: var(--bg); }
+    .btn-prev:disabled { opacity: 0.3; pointer-events: none; }
+    .btn-next, .btn-submit { flex: 2; padding: 13px; background: var(--violet); color: var(--white); border: none; border-radius: 8px; font-size: 0.93rem; font-weight: 700; cursor: pointer; transition: background .18s; }
+    .btn-next:hover, .btn-submit:hover { background: var(--violet-dark); }
+
+    /* ── Success ── */
+    #success { display: none; text-align: center; padding: 60px 20px; }
+    #success .check-icon { font-size: 3rem; color: var(--violet); margin-bottom: 20px; }
+    #success h2 { font-family: Georgia, serif; font-size: 1.5rem; color: var(--charcoal); margin-bottom: 12px; }
+    #success p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+    @media (max-width: 480px) {
+      .check-grid { grid-template-columns: 1fr; }
+      .r-opt { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <svg viewBox="0 0 30 34" fill="none">
+    <circle cx="17" cy="5" r="3.5" stroke="#5A4A9C" stroke-width="1.4"/>
+    <path d="M4 18 Q9 10 17 12.5 Q22 14 24 8" stroke="#3D3D3D" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+    <path d="M17 12.5 L15 22 L10 31" stroke="#3D3D3D" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+    <path d="M17 12.5 L20 22 L26 29" stroke="#3D3D3D" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  </svg>
+  <div>
+    <span class="header-wordmark">corpus salud</span>
+    <span class="header-sub">Validación clínica M2 — Para Cris</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="progress-track"><div class="progress-fill" id="prog"></div></div>
+  <div class="step-label" id="step-lbl"></div>
+
+  <!-- ══ STEP 1: CASO BASE ══ -->
+  <div class="step active" id="step-1">
+    <div class="step-title">Caso base de la POC</div>
+    <div class="step-desc">Vamos a construir el software empezando por el caso más frecuente. Necesitamos confirmar que el punto de partida es el correcto.</div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">El caso base es: lumbalgia crónica, adulto 40–60 años, sedentario, trabaja sentado.</div>
+      <div class="q-hint">Basado en tus 123 pacientes: 55 casos lumbares (45%)</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q1" value="si"><span>✓ Sí, correcto</span></label>
+        <label class="r-opt"><input type="radio" name="q1" value="no"><span>No, lo corrijo</span></label>
+      </div>
+      <textarea class="correction" name="q1_nota" placeholder="¿Cuál sería el caso correcto?"></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Hay una variante de lumbalgia más representativa de tu trabajo diario?</div>
+      <div class="q-hint">ej: funcional sin imagen, con contractura muscular, con irradiación, otro</div>
+      <textarea name="q2" placeholder="Tu respuesta (opcional)..."></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Cuánto dura en promedio una sesión inicial completa con este tipo de paciente?</div>
+      <textarea name="q3" placeholder="ej: 45 min, 1 hora, depende..."></textarea>
+    </div>
+  </div>
+
+  <!-- ══ STEP 2: ANAMNESIS — DOLOR ══ -->
+  <div class="step" id="step-2">
+    <div class="step-title">Anamnesis — Dolor</div>
+    <div class="step-desc">Qué información registras sobre el dolor del paciente en la primera parte de la sesión 1.</div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Registras el tipo de dolor?</div>
+      <div class="q-hint">punzante, sordo, irradiado, mecánico, etc.</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q4" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q4" value="no"><span>No / Lo corrijo</span></label>
+      </div>
+      <textarea class="correction" name="q4_nota" placeholder="¿Cómo lo registras exactamente?"></textarea>
+    </div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Registras cuánto tiempo lleva el paciente con el dolor?</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q5" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q5" value="no"><span>No / Lo corrijo</span></label>
+      </div>
+      <textarea class="correction" name="q5_nota" placeholder="Corrección o comentario..."></textarea>
+    </div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Registras intensidad con escala EVA (0–10)?</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q6" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q6" value="no"><span>No / Lo corrijo</span></label>
+      </div>
+      <textarea class="correction" name="q6_nota" placeholder="¿Usas otra escala?"></textarea>
+    </div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Registras factores agravantes y atenuantes?</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q7" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q7" value="no"><span>No / Lo corrijo</span></label>
+      </div>
+      <textarea class="correction" name="q7_nota" placeholder="Corrección o comentario..."></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Hay algo más sobre el dolor que registras y no aparece aquí?</div>
+      <textarea name="q8" placeholder="Tu respuesta (opcional)..."></textarea>
+    </div>
+  </div>
+
+  <!-- ══ STEP 3: HISTORIAL, HÁBITOS Y FORMATO ══ -->
+  <div class="step" id="step-3">
+    <div class="step-title">Anamnesis — Historial, hábitos y formato</div>
+    <div class="step-desc">Historial clínico, contexto del paciente, y cómo registras todo esto hoy.</div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Registras si el paciente tiene diagnóstico previo o imágenes?</div>
+      <div class="q-hint">resonancia, radiografía, informes, etc.</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q9" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q9" value="no"><span>No / Lo corrijo</span></label>
+      </div>
+      <textarea class="correction" name="q9_nota" placeholder="Corrección o comentario..."></textarea>
+    </div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Registras dolores asociados además del motivo de consulta principal?</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q10" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q10" value="no"><span>No / Lo corrijo</span></label>
+      </div>
+      <textarea class="correction" name="q10_nota" placeholder="Corrección o comentario..."></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Preguntas por tratamientos previos? ¿Cuáles?</div>
+      <div class="q-hint">kinesiología, masajes, médico, cirugía, fármacos, etc.</div>
+      <textarea name="q11" placeholder="Tu respuesta..."></textarea>
+    </div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Registras hábitos? (actividad física, alcohol/tabaco, tipo de trabajo, calidad de sueño)</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q12" value="si"><span>✓ Sí, todo</span></label>
+        <label class="r-opt"><input type="radio" name="q12" value="parcial"><span>Solo algunos</span></label>
+        <label class="r-opt"><input type="radio" name="q12" value="no"><span>No</span></label>
+      </div>
+      <textarea class="correction" name="q12_nota" placeholder="¿Cuáles sí y cuáles no?"></textarea>
+    </div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Registras información nutricional general?</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q13" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q13" value="no"><span>No</span></label>
+      </div>
+      <textarea class="correction" name="q13_nota" placeholder="¿Qué tan detallado?"></textarea>
+    </div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Registras fármacos actuales del paciente?</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q14" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q14" value="no"><span>No / Lo corrijo</span></label>
+      </div>
+      <textarea class="correction" name="q14_nota" placeholder="Corrección o comentario..."></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Hay alguna pregunta que siempre haces en la primera sesión y no aparece arriba?</div>
+      <textarea name="q15" placeholder="Tu respuesta (opcional)..."></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Cómo registras esta información hoy?</div>
+      <div class="check-grid">
+        <label class="c-opt"><input type="checkbox" name="q16" value="papel"><span>Papel</span></label>
+        <label class="c-opt"><input type="checkbox" name="q16" value="excel"><span>Excel / Google Sheets</span></label>
+        <label class="c-opt"><input type="checkbox" name="q16" value="memoria"><span>De memoria</span></label>
+        <label class="c-opt"><input type="checkbox" name="q16" value="otro"><span>Otro</span></label>
+      </div>
+      <textarea name="q16_detalle" placeholder="Si marcaste Otro o quieres agregar detalles..."></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Hay un orden específico en que haces estas preguntas?</div>
+      <textarea name="q17" placeholder="Tu respuesta (opcional)..."></textarea>
+    </div>
+  </div>
+
+  <!-- ══ STEP 4: EVALUACIÓN FÍSICA ══ -->
+  <div class="step" id="step-4">
+    <div class="step-title">Evaluación física (Sesión 1, parte 2)</div>
+    <div class="step-desc">Lo que evalúas físicamente en la primera sesión: screening, camilla, extremidades y primera intervención.</div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Haces screening de movimiento para identificar qué movimientos generan dolor?</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q18" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q18" value="no"><span>No / Lo corrijo</span></label>
+      </div>
+      <textarea class="correction" name="q18_nota" placeholder="Corrección o comentario..."></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Qué movimientos evalúas siempre en un paciente lumbar?</div>
+      <div class="q-hint">ej: flexión, extensión, rotación, marcha, etc.</div>
+      <textarea name="q19" placeholder="Lista los movimientos que evalúas..."></textarea>
+    </div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Evalúas palpación de tejidos blandos y puntos gatillo?</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q20" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q20" value="no"><span>No / Lo corrijo</span></label>
+      </div>
+      <textarea class="correction" name="q20_nota" placeholder="Corrección o comentario..."></textarea>
+    </div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Evalúas rango de movimiento articular?</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q21" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q21" value="no"><span>No / Lo corrijo</span></label>
+      </div>
+      <textarea class="correction" name="q21_nota" placeholder="Corrección o comentario..."></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Hay tests ortopédicos que usas siempre?</div>
+      <div class="q-hint">ej: Lasègue, FABER, Slump, Patrick, etc.</div>
+      <textarea name="q22" placeholder="Lista los tests que usas habitualmente..."></textarea>
+    </div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Evalúas extremidades inferiores? (alineación, elongación, simetría, fuerza, sensibilidad)</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q23" value="si"><span>✓ Sí, todo</span></label>
+        <label class="r-opt"><input type="radio" name="q23" value="parcial"><span>Solo algunos</span></label>
+        <label class="r-opt"><input type="radio" name="q23" value="no"><span>No</span></label>
+      </div>
+      <textarea class="correction" name="q23_nota" placeholder="¿Cuáles sí y cuáles no?"></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Hay algo más de la evaluación de extremidades que sea importante registrar?</div>
+      <textarea name="q24" placeholder="Tu respuesta (opcional)..."></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Cómo registras el "hallazgo principal" al terminar la evaluación?</div>
+      <div class="q-hint">ej: texto libre, categorías predefinidas, conclusión clínica resumida</div>
+      <textarea name="q25" placeholder="Tu respuesta..."></textarea>
+    </div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Haces una primera intervención de ~15 min al final de la sesión 1?</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q26" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q26" value="no"><span>No / Lo corrijo</span></label>
+      </div>
+      <textarea class="correction" name="q26_nota" placeholder="¿Cómo es en realidad?"></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Qué resultado u observación registras de esa primera intervención?</div>
+      <textarea name="q27" placeholder="Tu respuesta..."></textarea>
+    </div>
+  </div>
+
+  <!-- ══ STEP 5: SEGUIMIENTO ══ -->
+  <div class="step" id="step-5">
+    <div class="step-title">Seguimiento (Sesiones 2 a 8)</div>
+    <div class="step-desc">Lo que registras en las sesiones de tratamiento y cómo decides la evolución del paciente.</div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Registras EVA al inicio de cada sesión de seguimiento?</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q28" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q28" value="no"><span>No / Lo corrijo</span></label>
+      </div>
+      <textarea class="correction" name="q28_nota" placeholder="Corrección o comentario..."></textarea>
+    </div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Registras notas de evolución por sesión?</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q29" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q29" value="no"><span>No / Lo corrijo</span></label>
+      </div>
+      <textarea class="correction" name="q29_nota" placeholder="Corrección o comentario..."></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Qué tan extensas son esas notas normalmente?</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q30" value="frases"><span>2–3 frases</span></label>
+        <label class="r-opt"><input type="radio" name="q30" value="parrafo"><span>Un párrafo</span></label>
+        <label class="r-opt"><input type="radio" name="q30" value="bullets"><span>Bullet points</span></label>
+        <label class="r-opt"><input type="radio" name="q30" value="varia"><span>Varía mucho</span></label>
+      </div>
+    </div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿En la sesión 4 evalúas si el paciente puede pasar a atención online?</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q31" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q31" value="no"><span>No / Lo corrijo</span></label>
+      </div>
+      <textarea class="correction" name="q31_nota" placeholder="¿En qué sesión lo evalúas?"></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Qué criterios usas para decidir si puede continuar online?</div>
+      <textarea name="q32" placeholder="Tu respuesta..."></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Cómo manejas el plan de ejercicios asignado a cada paciente?</div>
+      <div class="q-hint">ej: lista predefinida, texto libre, videos en Drive, etc.</div>
+      <textarea name="q33" placeholder="Tu respuesta..."></textarea>
+    </div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Registras alguna estimación de funcionalidad recuperada?</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q34" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q34" value="no"><span>No / Lo corrijo</span></label>
+      </div>
+      <textarea class="correction" name="q34_nota" placeholder="¿Cómo estimas el progreso?"></textarea>
+    </div>
+  </div>
+
+  <!-- ══ STEP 6: ADULTOS MAYORES ══ -->
+  <div class="step" id="step-6">
+    <div class="step-title">Adultos mayores (+70 años)</div>
+    <div class="step-desc">El 46% de tus pacientes son adultos mayores. El software va a diferenciar el protocolo para ellos automáticamente.</div>
+
+    <div class="q q-confirm">
+      <span class="q-badge badge-c">Confirmar</span>
+      <div class="q-text">¿Hay campos o evaluaciones específicas que agregas para adultos mayores?</div>
+      <div class="radio-row">
+        <label class="r-opt"><input type="radio" name="q35" value="si"><span>✓ Sí</span></label>
+        <label class="r-opt"><input type="radio" name="q35" value="no"><span>No</span></label>
+      </div>
+      <textarea class="correction" name="q35_nota" placeholder="¿Cuáles son esas evaluaciones específicas?"></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Cuál es la diferencia más importante en tu manejo de adultos mayores vs. adultos jóvenes?</div>
+      <textarea name="q36" placeholder="Tu respuesta..."></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Cambia el criterio de alta o el plan de ejercicios para adultos mayores?</div>
+      <textarea name="q37" placeholder="Tu respuesta..."></textarea>
+    </div>
+  </div>
+
+  <!-- ══ STEP 7: LO QUE MÁS IMPORTA ══ -->
+  <div class="step" id="step-7">
+    <div class="step-title">Lo que más importa</div>
+    <div class="step-desc">Las últimas preguntas son abiertas. Tu perspectiva acá va a moldear directamente cómo diseñamos la herramienta.</div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Qué es lo más importante que debería tener este software para que te sirva en el día a día?</div>
+      <textarea name="q38" placeholder="Tu respuesta..." style="min-height:100px"></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Qué es lo que más te molesta del sistema actual (o de no tener sistema)?</div>
+      <textarea name="q39" placeholder="Tu respuesta..." style="min-height:100px"></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Hay algo que quieras poder mostrarle al paciente desde el sistema?</div>
+      <div class="q-hint">ej: evolución del dolor, ejercicios asignados, progreso EVA, etc.</div>
+      <textarea name="q40" placeholder="Tu respuesta (opcional)..."></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Tienes plantillas, formatos o documentos que ya usas y quisieras integrar?</div>
+      <textarea name="q41" placeholder="Tu respuesta (opcional)..."></textarea>
+    </div>
+
+    <div class="q q-input">
+      <span class="q-badge badge-i">Tu input</span>
+      <div class="q-text">¿Cómo usas Google Drive hoy con tus pacientes?</div>
+      <div class="q-hint">fotos, videos de ejercicios, documentos, nada todavía, etc.</div>
+      <textarea name="q42" placeholder="Tu respuesta (opcional)..."></textarea>
+    </div>
+  </div>
+
+  <!-- Nav buttons -->
+  <div class="nav" id="nav-btns">
+    <button class="btn-prev" id="btn-prev" onclick="prevStep()">← Anterior</button>
+    <button class="btn-next" id="btn-next" onclick="nextStep()">Siguiente →</button>
+    <button class="btn-submit" id="btn-submit" onclick="submitForm()" style="display:none">Enviar respuestas →</button>
+  </div>
+
+  <!-- Success -->
+  <div id="success">
+    <div class="check-icon">✓</div>
+    <h2>¡Listo, Cris!</h2>
+    <p>Recibimos tus respuestas.<br>Ignacio te contactará esta semana con el primer borrador del software.</p>
+  </div>
+</div>
+
+<script>
+  const TOTAL = 7;
+  let cur = 1;
+
+  function updateUI() {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-' + cur).classList.add('active');
+    document.getElementById('step-lbl').textContent = 'Paso ' + cur + ' de ' + TOTAL;
+    document.getElementById('prog').style.width = ((cur / TOTAL) * 100) + '%';
+    document.getElementById('btn-prev').disabled = cur === 1;
+    const last = cur === TOTAL;
+    document.getElementById('btn-next').style.display   = last ? 'none'  : 'block';
+    document.getElementById('btn-submit').style.display = last ? 'block' : 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function nextStep() { if (cur < TOTAL) { cur++; updateUI(); } }
+  function prevStep() { if (cur > 1)     { cur--; updateUI(); } }
+
+  // Show correction textarea when "no" or "parcial" is selected
+  document.addEventListener('change', function(e) {
+    if (e.target.type !== 'radio') return;
+    const card = e.target.closest('.q');
+    if (!card) return;
+    const corr = card.querySelector('.correction');
+    if (!corr) return;
+    corr.classList.toggle('visible', e.target.value !== 'si');
+  });
+
+  function collectData() {
+    const data = { formType: 'm2_validacion_cris' };
+    document.querySelectorAll('textarea').forEach(el => {
+      if (el.name) data[el.name] = el.value.trim();
+    });
+    document.querySelectorAll('input[type="radio"]:checked').forEach(el => {
+      data[el.name] = el.value;
+    });
+    const checks = {};
+    document.querySelectorAll('input[type="checkbox"]').forEach(el => {
+      if (!checks[el.name]) checks[el.name] = [];
+      if (el.checked) checks[el.name].push(el.value);
+    });
+    Object.keys(checks).forEach(k => { data[k] = checks[k].join(', '); });
+    return data;
+  }
+
+  function submitForm() {
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true; btn.textContent = 'Enviando...';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwMIG1x9O-QpoKyQEEqG7SkLWDelmHGI_oqK4pm-PHSvwic7tTavi9zZbBkK8v0UVOX/exec';
+    fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(collectData()) })
+      .then(() => {
+        document.querySelector('.wrap').innerHTML = document.getElementById('success').outerHTML;
+        document.getElementById('success').style.display = 'block';
+      })
+      .catch(() => {
+        btn.disabled = false; btn.textContent = 'Enviar respuestas →';
+        alert('Hubo un error. Por favor intenta nuevamente.');
+      });
+  }
+
+  updateUI();
+</script>
+</body>
+</html>

@@ -162,7 +162,7 @@
     .dot.active { background: var(--gold); width: 48px; }
 
     /* Progress bar */
-    .slider-progress { position: absolute; bottom: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--violet), var(--gold)); animation: progress 4s linear infinite; }
+    .slider-progress { position: absolute; bottom: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--violet), var(--gold)); animation: progress 7s linear infinite; }
     @keyframes progress { from { width: 0 } to { width: 100% } }
 
     /* ══ STATS BAR — FIXED INSIDE SLIDER ═══════════════════ */
@@ -316,8 +316,8 @@
       .faq-list { columns: 1; }
 
       /* Slider */
-      .slider { margin-top: 56px; height: calc(100svh - 56px); min-height: 580px; }
-      .slide { padding: 48px 24px 170px; }
+      .slider { margin-top: 56px; height: calc(100svh - 56px); min-height: 620px; }
+      .slide { padding: 48px 24px 210px; }
       .slide-eyebrow { font-size: 0.7rem; padding: 6px 16px; margin-bottom: 20px; }
       .slide h1 { font-size: clamp(1.85rem, 7.5vw, 2.4rem); line-height: 1.2; margin-bottom: 16px; }
       .slide-sub { font-size: 1rem; margin-bottom: 28px; line-height: 1.6; }
@@ -601,9 +601,9 @@
     current = (n + slides.length) % slides.length;
     slides[current].classList.add('active'); dots[current].classList.add('active');
     pb.style.animation = 'none'; pb.offsetHeight; pb.style.animation = 'progress 4s linear infinite';
-    clearInterval(timer); timer = setInterval(() => goToSlide(current + 1), 4000);
+    clearInterval(timer); timer = setInterval(() => goToSlide(current + 1), 7000);
   }
-  timer = setInterval(() => goToSlide(current + 1), 4000);
+  timer = setInterval(() => goToSlide(current + 1), 7000);
 
   // Swipe en mobile
   let touchX = 0;
@@ -614,7 +614,7 @@
     if (Math.abs(dx) > 40) goToSlide(dx < 0 ? current + 1 : current - 1);
   });
   sliderEl.addEventListener('mouseenter', () => clearInterval(timer));
-  sliderEl.addEventListener('mouseleave', () => { timer = setInterval(() => goToSlide(current + 1), 4000); });
+  sliderEl.addEventListener('mouseleave', () => { timer = setInterval(() => goToSlide(current + 1), 7000); });
 
   // Mobile menu
   function toggleMobileMenu() {

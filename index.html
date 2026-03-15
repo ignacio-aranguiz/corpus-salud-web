@@ -294,6 +294,49 @@
     }
     .mob-cta:active { background: var(--violet-dark); }
 
+    /* ══ MOBILE ACCORDION ═══════════════════════════════════ */
+    .mob-accordion-trigger {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: none;
+    }
+    .mob-acc-arrow { font-size: 0.85rem; transition: transform 0.3s; flex-shrink: 0; }
+    .mob-accordion-trigger.open .mob-acc-arrow { transform: rotate(180deg); }
+    .mob-accordion-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.35s ease;
+    }
+    .mob-accordion-body.open { max-height: 700px; }
+    .mob-acc-content {
+      padding: 16px 24px 20px; background: var(--violet-light);
+      border-bottom: 1px solid var(--border);
+    }
+    .mob-acc-label {
+      font-size: 0.63rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--violet);
+      margin-bottom: 6px; margin-top: 14px;
+    }
+    .mob-acc-label:first-child { margin-top: 0; }
+    .mob-acc-text { font-size: 0.88rem; color: var(--charcoal); line-height: 1.6; }
+    .mob-acc-quote {
+      border-left: 3px solid var(--gold); padding: 10px 14px; margin-top: 12px;
+      font-size: 0.83rem; color: var(--charcoal-mid); font-style: italic; line-height: 1.55;
+    }
+    .mob-acc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+    .mob-acc-grid h3 {
+      font-size: 0.63rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--violet); padding-bottom: 6px;
+      border-bottom: 1px solid var(--border); margin-bottom: 8px;
+    }
+    .mob-acc-grid ul { list-style: none; }
+    .mob-acc-grid li {
+      font-size: 0.81rem; color: var(--charcoal-mid);
+      padding: 4px 0; border-bottom: 1px solid var(--border);
+    }
+    .mob-acc-faq-item { padding: 11px 0; border-bottom: 1px solid var(--border); }
+    .mob-acc-faq-item:last-child { border-bottom: none; }
+    .mob-acc-faq-q { font-size: 0.88rem; font-weight: 600; color: var(--charcoal); margin-bottom: 4px; }
+    .mob-acc-faq-a { font-size: 0.83rem; color: var(--charcoal-mid); line-height: 1.55; }
+
     /* ══ RESPONSIVE — Mobile first ══════════════════════════
        Principio: diseñado para iPhone/Android primero.
        Desktop: media query min-width añade columnas y espaciados.
@@ -402,9 +445,40 @@
 <!-- ══ MOBILE MENU ══ -->
 <div class="mobile-menu" id="mobile-menu">
   <a href="#journey" class="mob-link" onclick="closeMobileMenu()">Cómo funciona</a>
-  <button class="mob-link" onclick="closeMobileMenu(); togglePanel('panel-nosotros')">¿Por qué nosotros?</button>
+
+  <!-- Accordion: ¿Por qué nosotros? -->
+  <button class="mob-link mob-accordion-trigger" onclick="toggleMobAccordion('acc-nosotros')">
+    ¿Por qué nosotros? <span class="mob-acc-arrow">▾</span>
+  </button>
+  <div class="mob-accordion-body" id="acc-nosotros">
+    <div class="mob-acc-content">
+      <div class="mob-acc-label">Nuestra propuesta de valor</div>
+      <p class="mob-acc-text">No tratamos síntomas. Evaluamos biomecánica, hábitos y conciencia corporal para devolverte autonomía y longevidad funcional.</p>
+      <div class="mob-acc-quote">"Resolvemos tu dolor un 20% más rápido que con la terapia convencional, con una metodología propia que convierte al paciente en protagonista de su recuperación."</div>
+      <div class="mob-acc-label" style="margin-top:16px;">Qué nos hace distintos</div>
+      <div class="mob-acc-grid">
+        <div><h3>No hacemos</h3><ul><li>Tratar síntomas aislados</li><li>Maximizar sesiones</li><li>Derivar sin agotar opciones</li><li>Crear dependencia</li></ul></div>
+        <div><h3>Hacemos</h3><ul><li>Causa multifactorial</li><li>Evaluación diferencial</li><li>Paciente protagonista</li><li>Alta tasa de éxito</li></ul></div>
+      </div>
+    </div>
+  </div>
+
   <a href="#resultados" class="mob-link" onclick="closeMobileMenu()">Resultados comprobados</a>
-  <button class="mob-link" onclick="closeMobileMenu(); togglePanel('panel-faq')">Resuelve tus dudas</button>
+
+  <!-- Accordion: Resuelve tus dudas -->
+  <button class="mob-link mob-accordion-trigger" onclick="toggleMobAccordion('acc-faq')">
+    Resuelve tus dudas <span class="mob-acc-arrow">▾</span>
+  </button>
+  <div class="mob-accordion-body" id="acc-faq">
+    <div class="mob-acc-content">
+      <div class="mob-acc-faq-item"><div class="mob-acc-faq-q">¿Cuántas sesiones necesito?</div><div class="mob-acc-faq-a">La mayoría ve resultados entre la sesión 3 y 5. Desde la sesión 4, muchos continúan de forma online.</div></div>
+      <div class="mob-acc-faq-item"><div class="mob-acc-faq-q">¿La evaluación inicial tiene costo?</div><div class="mob-acc-faq-a">En esta etapa es sin costo. Queremos entender tu situación antes de cualquier compromiso.</div></div>
+      <div class="mob-acc-faq-item"><div class="mob-acc-faq-q">¿Funciona para adultos mayores?</div><div class="mob-acc-faq-a">Sí. Casi la mitad de nuestros pacientes son adultos mayores. Adaptamos el protocolo a cada etapa de la vida.</div></div>
+      <div class="mob-acc-faq-item"><div class="mob-acc-faq-q">¿Qué llevo a la primera sesión?</div><div class="mob-acc-faq-a">Exámenes o imágenes previas si los tienes, y ropa cómoda. Nada más.</div></div>
+      <div class="mob-acc-faq-item"><div class="mob-acc-faq-q">¿Hay atención online?</div><div class="mob-acc-faq-a">Sí. Después de las primeras sesiones presenciales, la mayoría puede continuar en formato online.</div></div>
+    </div>
+  </div>
+
   <a href="#contacto" class="mob-cta" onclick="closeMobileMenu()">Solicitar evaluación →</a>
 </div>
 
@@ -628,6 +702,14 @@
     document.getElementById('mobile-menu').classList.remove('open');
     document.getElementById('hamburger').classList.remove('open');
     document.body.style.overflow = '';
+  }
+  function toggleMobAccordion(id) {
+    const body = document.getElementById(id);
+    const trigger = body.previousElementSibling;
+    const isOpen = body.classList.contains('open');
+    document.querySelectorAll('.mob-accordion-body').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.mob-accordion-trigger').forEach(t => t.classList.remove('open'));
+    if (!isOpen) { body.classList.add('open'); trigger.classList.add('open'); }
   }
 
   // Nav panels

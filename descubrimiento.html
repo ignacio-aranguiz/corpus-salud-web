@@ -370,15 +370,22 @@
     return true;
   }
 
+  function shouldSkipStep4() {
+    const el = document.querySelector('input[name="termino"]:checked');
+    return el && el.value === 'no_empece';
+  }
+
   function nextStep() {
     if (!validate()) return;
     currentStep++;
+    if (currentStep === 4 && shouldSkipStep4()) currentStep++;
     showStep(currentStep);
     updateProgress();
   }
 
   function prevStep() {
     currentStep--;
+    if (currentStep === 4 && shouldSkipStep4()) currentStep--;
     showStep(currentStep);
     updateProgress();
   }

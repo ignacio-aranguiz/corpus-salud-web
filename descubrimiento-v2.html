@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Corpus — Descubriendo una Necesidad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --brand:       #8B7EC8;
+      --brand-dk:    #6B5FA8;
+      --brand-light: #E8E4F3;
+      --charcoal:    #4A4A4A;
+      --muted:       #7A7A8A;
+      --bg:          #FFFFFF;
+      --bg-subtle:   #F7F5FC;
+      --border:      #E2DCF5;
+      --border-soft: #C8C4D8;
+      --white:       #FFFFFF;
+    }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--charcoal); line-height: 1.6; }
+
+    /* ── Header ── */
+    .header { background: var(--white); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 10; }
+    .header-wordmark { font-family: 'Caveat', cursive; font-size: 1.15rem; font-weight: 600; color: var(--charcoal); letter-spacing: 0.01em; }
+    .header-sub { font-size: 0.52rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--brand); font-weight: 600; display: block; }
+
+    /* ── Container ── */
+    .wrap { max-width: 600px; margin: 0 auto; padding: 28px 20px 100px; }
+
+    /* ── Intro ── */
+    .intro { text-align: center; padding: 44px 0 36px; }
+    .intro-icon { margin-bottom: 24px; }
+    .time-badge { display: inline-block; font-size: 0.72rem; color: var(--muted); border: 1px solid var(--border); border-radius: 20px; padding: 3px 12px; margin-bottom: 20px; }
+    .intro h1 { font-size: 1.5rem; font-weight: 700; color: var(--charcoal); margin-bottom: 12px; line-height: 1.35; }
+    .intro p { font-size: 0.9rem; color: var(--muted); max-width: 420px; margin: 0 auto 28px; line-height: 1.7; }
+    .btn-start { display: inline-block; padding: 14px 36px; background: var(--brand); color: var(--white); border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background .18s; }
+    .btn-start:hover { background: var(--brand-dk); }
+
+    /* ── Progress ── */
+    .progress-track { background: var(--brand-light); border-radius: 4px; height: 5px; margin-bottom: 8px; }
+    .progress-fill { background: var(--brand); height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+    .step-label { font-size: 0.72rem; color: var(--muted); text-align: right; margin-bottom: 24px; }
+
+    /* ── Step ── */
+    .step { display: none; }
+    .step.active { display: block; }
+    .step-icon { margin-bottom: 12px; }
+    .step-title { font-size: 1.2rem; font-weight: 700; color: var(--charcoal); margin-bottom: 6px; line-height: 1.4; }
+    .step-desc { font-size: 0.85rem; color: var(--muted); margin-bottom: 22px; line-height: 1.65; }
+
+    /* ── Question card ── */
+    .q { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 10px; }
+    .q-text { font-size: 0.92rem; font-weight: 600; color: var(--charcoal); margin-bottom: 12px; }
+    .q-hint { font-size: 0.78rem; color: var(--muted); margin-bottom: 12px; margin-top: -8px; }
+    .q-divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+
+    /* ── Radio ── */
+    .radio-col { display: flex; flex-direction: column; gap: 8px; }
+    .r-opt { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--white); transition: border-color .18s, background .18s; user-select: none; }
+    .r-opt input { accent-color: var(--brand); margin-top: 2px; flex-shrink: 0; }
+    .r-opt-label { font-size: 0.86rem; font-weight: 500; }
+    .r-opt-sub { font-size: 0.76rem; color: var(--muted); display: block; }
+    .r-opt:has(input:checked) { border-color: var(--brand); background: var(--brand-light); }
+    .r-opt.opt-escape { border-style: dashed; border-color: var(--border-soft); }
+    .r-opt.opt-escape .r-opt-label { color: var(--muted); }
+    .r-opt.opt-escape:has(input:checked) { border-color: var(--muted); background: #F0EFF5; }
+
+    /* ── Checkboxes ── */
+    .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    @media (max-width: 400px) { .check-grid { grid-template-columns: 1fr; } }
+    .c-opt { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--white); transition: border-color .18s, background .18s; user-select: none; }
+    .c-opt input { accent-color: var(--brand); flex-shrink: 0; }
+    .c-opt span { font-size: 0.85rem; font-weight: 500; }
+    .c-opt:has(input:checked) { border-color: var(--brand); background: var(--brand-light); }
+
+    /* ── Textarea / Input ── */
+    textarea, .text-input {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 11px 14px; font-family: inherit; font-size: 0.86rem;
+      color: var(--charcoal); resize: vertical; min-height: 90px;
+      margin-top: 4px; transition: border-color .18s; background: var(--white);
+    }
+    .text-input { min-height: unset; height: 44px; resize: none; }
+    textarea:focus, .text-input:focus { outline: none; border-color: var(--brand); }
+    .input-label { font-size: 0.82rem; font-weight: 600; color: var(--charcoal); margin-bottom: 4px; display: block; }
+    .input-optional { font-weight: 400; color: var(--muted); font-size: 0.78rem; }
+
+    /* ── Select ── */
+    .select-input {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 11px 14px; font-family: inherit; font-size: 0.86rem;
+      color: var(--charcoal); background: var(--white); cursor: pointer;
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238B7EC8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+      transition: border-color .18s;
+    }
+    .select-input:focus { outline: none; border-color: var(--brand); }
+
+    /* ── Condicional abandono ── */
+    #motivo-abandono { display: none; margin-top: 12px; }
+    #motivo-abandono.visible { display: block; }
+
+    /* ── Step 5 variantes ── */
+    .step5-block { display: none; }
+    .step5-block.visible { display: block; }
+
+    /* ── Nav ── */
+    .nav { display: flex; gap: 10px; margin-top: 28px; }
+    .btn-prev { flex: 1; padding: 13px; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; color: var(--charcoal); transition: background .18s; }
+    .btn-prev:hover { background: var(--bg-subtle); }
+    .btn-prev:disabled { opacity: 0.3; pointer-events: none; }
+    .btn-next, .btn-submit { flex: 2; padding: 13px; background: var(--brand); color: var(--white); border: none; border-radius: 8px; font-size: 0.93rem; font-weight: 700; cursor: pointer; transition: background .18s; }
+    .btn-next:hover, .btn-submit:hover { background: var(--brand-dk); }
+
+    /* ── Success ── */
+    #success { display: none; text-align: center; padding: 60px 20px; }
+    .check-icon { width: 56px; height: 56px; background: var(--brand-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+    #success h2 { font-size: 1.4rem; font-weight: 700; color: var(--charcoal); margin-bottom: 10px; }
+    #success p { color: var(--muted); font-size: 0.88rem; line-height: 1.7; max-width: 380px; margin: 0 auto; }
+
+    /* ── Error ── */
+    .error-msg { color: #c0392b; font-size: 0.8rem; margin-top: 8px; display: none; }
+    .error-msg.visible { display: block; }
+
+    /* ── Demo badge ── */
+    .demo-badge { background: #FFF3CD; border: 1px solid #FFCC44; color: #7A5800; font-size: 0.72rem; text-align: center; padding: 6px 16px; }
+  </style>
+</head>
+<body>
+
+<div class="demo-badge">v2 — prototipo en revisión</div>
+
+<!-- Header -->
+<header class="header">
+  <svg width="18" height="26" viewBox="0 0 18 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="9" cy="3" r="2.8" fill="#8B7EC8"/>
+    <line x1="9" y1="5.8" x2="8.5" y2="15" stroke="#8B7EC8" stroke-width="1.7" stroke-linecap="round"/>
+    <line x1="8.8" y1="9.5" x2="2.5" y2="13.5" stroke="#8B7EC8" stroke-width="1.7" stroke-linecap="round"/>
+    <line x1="8.8" y1="9.5" x2="15.5" y2="7" stroke="#8B7EC8" stroke-width="1.7" stroke-linecap="round"/>
+    <line x1="8.5" y1="15" x2="4.5" y2="24" stroke="#8B7EC8" stroke-width="1.7" stroke-linecap="round"/>
+    <line x1="8.5" y1="15" x2="14" y2="22" stroke="#8B7EC8" stroke-width="1.7" stroke-linecap="round"/>
+  </svg>
+  <div>
+    <span class="header-wordmark">corpus</span>
+    <span class="header-sub">Salud integral para todos</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ══ INTRO ══ -->
+  <div id="intro">
+    <div class="intro">
+      <div class="intro-icon">
+        <svg width="52" height="72" viewBox="0 0 18 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="9" cy="3" r="2.8" fill="#8B7EC8"/>
+          <line x1="9" y1="5.8" x2="8.5" y2="15" stroke="#8B7EC8" stroke-width="1.7" stroke-linecap="round"/>
+          <line x1="8.8" y1="9.5" x2="2.5" y2="13.5" stroke="#8B7EC8" stroke-width="1.7" stroke-linecap="round"/>
+          <line x1="8.8" y1="9.5" x2="15.5" y2="7" stroke="#8B7EC8" stroke-width="1.7" stroke-linecap="round"/>
+          <line x1="8.5" y1="15" x2="4.5" y2="24" stroke="#8B7EC8" stroke-width="1.7" stroke-linecap="round"/>
+          <line x1="8.5" y1="15" x2="14" y2="22" stroke="#8B7EC8" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="time-badge">2 minutos</span>
+      <h1>¿El dolor físico alguna vez te detuvo?</h1>
+      <p>Estamos construyendo algo nuevo para hacer que la rehabilitación funcione de verdad. Queremos escucharte primero.</p>
+      <button class="btn-start" onclick="startForm()">Contar mi experiencia</button>
+    </div>
+  </div>
+
+  <!-- ══ FORM ══ -->
+  <div id="form-section" style="display:none;">
+    <div class="progress-track"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+    <div class="step-label" id="step-label">Paso 1 de 6</div>
+
+    <!-- ── Paso 1: Zona de dolor ── -->
+    <div class="step active" id="step-1">
+      <div class="step-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#8B7EC8" stroke-width="1.8"/>
+          <path d="M12 8v4l2.5 2.5" stroke="#8B7EC8" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 class="step-title">¿Qué zona te ha dolido?</h2>
+      <p class="step-desc">Marca todo lo que aplique en el último año. Puede ser más de una.</p>
+      <div class="q">
+        <div class="check-grid">
+          <label class="c-opt"><input type="checkbox" name="zona" value="cuello_hombro"><span>Cuello / Hombro</span></label>
+          <label class="c-opt"><input type="checkbox" name="zona" value="columna_espalda"><span>Columna / Espalda</span></label>
+          <label class="c-opt"><input type="checkbox" name="zona" value="cadera"><span>Cadera</span></label>
+          <label class="c-opt"><input type="checkbox" name="zona" value="rodilla"><span>Rodilla</span></label>
+          <label class="c-opt"><input type="checkbox" name="zona" value="tobillo_pie"><span>Tobillo / Pie</span></label>
+          <label class="c-opt"><input type="checkbox" name="zona" value="otro"><span>Otro</span></label>
+        </div>
+        <p class="error-msg" id="err-zona">Selecciona al menos una zona para continuar.</p>
+      </div>
+    </div>
+
+    <!-- ── Paso 2: Postergación ── -->
+    <div class="step" id="step-2">
+      <div class="step-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="#8B7EC8" stroke-width="1.8"/>
+          <path d="M12 7v5l3 3" stroke="#8B7EC8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="step-title">¿Cuánto esperaste antes de buscar ayuda?</h2>
+      <p class="step-desc">Desde que apareció el dolor hasta que consultaste con alguien. Todas las respuestas son correctas.</p>
+      <div class="q">
+        <div class="radio-col">
+          <label class="r-opt"><input type="radio" name="postergacion" value="menos_1_semana"><div><span class="r-opt-label">Menos de 1 semana</span><span class="r-opt-sub">Lo busqué enseguida</span></div></label>
+          <label class="r-opt"><input type="radio" name="postergacion" value="2_4_semanas"><div><span class="r-opt-label">2 a 4 semanas</span></div></label>
+          <label class="r-opt"><input type="radio" name="postergacion" value="1_3_meses"><div><span class="r-opt-label">1 a 3 meses</span><span class="r-opt-sub">Esperé a ver si pasaba solo</span></div></label>
+          <label class="r-opt"><input type="radio" name="postergacion" value="mas_3_meses"><div><span class="r-opt-label">Más de 3 meses</span><span class="r-opt-sub">Lo fui postergando bastante</span></div></label>
+          <label class="r-opt"><input type="radio" name="postergacion" value="no_busque"><div><span class="r-opt-label">Nunca llegué a buscar ayuda</span><span class="r-opt-sub">Lo manejé solo o lo ignoré</span></div></label>
+          <label class="r-opt opt-escape"><input type="radio" name="postergacion" value="no_aplica"><div><span class="r-opt-label">No me ha pasado / No aplica</span></div></label>
+        </div>
+        <p class="error-msg" id="err-postergacion">Elige una opción para continuar.</p>
+      </div>
+    </div>
+
+    <!-- ── Paso 3: Adherencia ── -->
+    <div class="step" id="step-3">
+      <div class="step-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="4" width="18" height="17" rx="2" stroke="#8B7EC8" stroke-width="1.8"/>
+          <path d="M3 9h18M8 2v4M16 2v4M7 14l3 3 5-5" stroke="#8B7EC8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="step-title">¿Lograste terminar el tratamiento?</h2>
+      <p class="step-desc">Piensa en la última vez que hiciste kinesiterapia u otra terapia física. Todas las respuestas son correctas.</p>
+      <div class="q">
+        <div class="radio-col">
+          <label class="r-opt"><input type="radio" name="termino" value="si" onchange="toggleMotivo(false)"><div><span class="r-opt-label">Sí, lo terminé completo</span></div></label>
+          <label class="r-opt"><input type="radio" name="termino" value="a_medias" onchange="toggleMotivo(true)"><div><span class="r-opt-label">Lo dejé a medias</span><span class="r-opt-sub">No llegué hasta el final</span></div></label>
+          <label class="r-opt"><input type="radio" name="termino" value="no_empece" onchange="toggleMotivo(false)"><div><span class="r-opt-label">Nunca empecé un tratamiento formal</span></div></label>
+        </div>
+        <div id="motivo-abandono">
+          <hr class="q-divider">
+          <p class="q-text">¿Qué fue lo más difícil para seguir yendo?</p>
+          <div class="check-grid">
+            <label class="c-opt"><input type="checkbox" name="motivo" value="horario"><span>El horario</span></label>
+            <label class="c-opt"><input type="checkbox" name="motivo" value="traslado"><span>El traslado</span></label>
+            <label class="c-opt"><input type="checkbox" name="motivo" value="costo"><span>El costo</span></label>
+            <label class="c-opt"><input type="checkbox" name="motivo" value="no_funcionaba"><span>Sentí que no funcionaba</span></label>
+            <label class="c-opt"><input type="checkbox" name="motivo" value="mejore"><span>Me mejoré y lo dejé</span></label>
+            <label class="c-opt"><input type="checkbox" name="motivo" value="otro"><span>Otro</span></label>
+          </div>
+        </div>
+        <p class="error-msg" id="err-termino">Elige una opción para continuar.</p>
+      </div>
+    </div>
+
+    <!-- ── Paso 4: En casa (se salta si nunca empezó) ── -->
+    <div class="step" id="step-4">
+      <div class="step-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <path d="M3 12L12 3l9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9" stroke="#8B7EC8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="step-title">¿Hacías los ejercicios en casa?</h2>
+      <p class="step-desc">Entre sesiones con el terapeuta, ¿qué pasaba? Todas las respuestas son correctas.</p>
+      <div class="q">
+        <div class="radio-col">
+          <label class="r-opt"><input type="radio" name="en_casa" value="siempre"><div><span class="r-opt-label">Sí, siempre</span><span class="r-opt-sub">Me los tomé en serio</span></div></label>
+          <label class="r-opt"><input type="radio" name="en_casa" value="a_veces"><div><span class="r-opt-label">A veces</span><span class="r-opt-sub">Cuando me acordaba</span></div></label>
+          <label class="r-opt"><input type="radio" name="en_casa" value="casi_nunca"><div><span class="r-opt-label">Casi nunca</span><span class="r-opt-sub">No sabía bien cómo o se me olvidaba</span></div></label>
+          <label class="r-opt"><input type="radio" name="en_casa" value="no_me_dieron"><div><span class="r-opt-label">No me dieron ejercicios para casa</span></div></label>
+          <label class="r-opt opt-escape"><input type="radio" name="en_casa" value="no_aplica"><div><span class="r-opt-label">No aplica en mi caso</span></div></label>
+        </div>
+        <p class="error-msg" id="err-en_casa">Elige una opción para continuar.</p>
+      </div>
+    </div>
+
+    <!-- ── Paso 5: Dual según path ── -->
+    <div class="step" id="step-5">
+
+      <!-- Versión A: tuvo experiencia con tratamiento -->
+      <div class="step5-block" id="step5-normal">
+        <div class="step-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#8B7EC8" stroke-width="1.8" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 class="step-title">Si pudieras cambiar una sola cosa...</h2>
+        <p class="step-desc">De tu última experiencia en rehabilitación, ¿qué cambiarías? Todas las respuestas son correctas.</p>
+        <div class="q">
+          <textarea id="varita-normal" placeholder="Escribe lo primero que se te viene a la mente..." rows="4"></textarea>
+        </div>
+      </div>
+
+      <!-- Versión B: nunca empezó tratamiento formal -->
+      <div class="step5-block" id="step5-noempece">
+        <div class="step-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#8B7EC8" stroke-width="1.8" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 class="step-title">¿Qué hiciste para sentirte mejor?</h2>
+        <p class="step-desc">Aunque no hayas ido a un especialista, algo habrás intentado. Todas las respuestas son correctas.</p>
+        <div class="q">
+          <div class="check-grid">
+            <label class="c-opt"><input type="checkbox" name="mejora" value="descanso"><span>Descansar y esperar</span></label>
+            <label class="c-opt"><input type="checkbox" name="mejora" value="analgesicos"><span>Analgésicos / antiinflamatorios</span></label>
+            <label class="c-opt"><input type="checkbox" name="mejora" value="calor_frio"><span>Calor o frío</span></label>
+            <label class="c-opt"><input type="checkbox" name="mejora" value="masajes"><span>Masajes</span></label>
+            <label class="c-opt"><input type="checkbox" name="mejora" value="ejercicio_propio"><span>Ejercicios propios</span></label>
+            <label class="c-opt"><input type="checkbox" name="mejora" value="videos_internet"><span>Videos / tutoriales</span></label>
+            <label class="c-opt"><input type="checkbox" name="mejora" value="nada"><span>Nada en particular</span></label>
+            <label class="c-opt"><input type="checkbox" name="mejora" value="otro"><span>Otro</span></label>
+          </div>
+          <hr class="q-divider">
+          <label class="input-label">¿Algo más que quieras agregar? <span class="input-optional">(opcional)</span></label>
+          <textarea id="varita-noempece" placeholder="Escribe lo que quieras..." rows="3" style="min-height: 70px;"></textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Paso 6: Formato ideal + datos + contacto ── -->
+    <div class="step" id="step-6">
+      <div class="step-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#8B7EC8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="step-title">¿Cómo te gustaría recuperarte?</h2>
+      <p class="step-desc">Si existiera la opción ideal, ¿cuál elegirías?</p>
+      <div class="q">
+        <div class="radio-col">
+          <label class="r-opt"><input type="radio" name="formato" value="presencial"><div><span class="r-opt-label">Ir 2 veces por semana a la clínica</span><span class="r-opt-sub">Presencial, con el especialista</span></div></label>
+          <label class="r-opt"><input type="radio" name="formato" value="online_guiado"><div><span class="r-opt-label">20 minutos diarios desde casa, con guía en video</span><span class="r-opt-sub">Sin traslados, a mi horario</span></div></label>
+          <label class="r-opt"><input type="radio" name="formato" value="domicilio"><div><span class="r-opt-label">Atención a domicilio</span><span class="r-opt-sub">Que vengan donde estoy</span></div></label>
+          <label class="r-opt"><input type="radio" name="formato" value="hibrido"><div><span class="r-opt-label">Una combinación de presencial y remoto</span><span class="r-opt-sub">Lo mejor de ambos mundos</span></div></label>
+        </div>
+        <p class="error-msg" id="err-formato">Elige una opción para continuar.</p>
+      </div>
+
+      <!-- Datos demográficos -->
+      <div class="q" style="margin-top: 14px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label class="input-label">Género <span class="input-optional">(opcional)</span></label>
+            <select class="select-input" id="genero">
+              <option value="">Seleccionar</option>
+              <option value="femenino">Femenino</option>
+              <option value="masculino">Masculino</option>
+              <option value="no_binario">No binario</option>
+              <option value="prefiero_no_decir">Prefiero no decir</option>
+            </select>
+          </div>
+          <div>
+            <label class="input-label">Edad <span class="input-optional">(opcional)</span></label>
+            <select class="select-input" id="edad">
+              <option value="">Seleccionar</option>
+              <option value="18_29">18 – 29</option>
+              <option value="30_39">30 – 39</option>
+              <option value="40_49">40 – 49</option>
+              <option value="50_59">50 – 59</option>
+              <option value="60_mas">60 o más</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contacto -->
+      <div class="q" style="margin-top: 14px;">
+        <p class="q-text" style="margin-bottom:4px;">¿Quieres que te compartamos lo que estamos construyendo? <span style="font-weight:400; color:var(--muted);">(opcional)</span></p>
+        <p class="q-hint">No es para venderte nada — solo para avisarte cuando esté listo.</p>
+        <label class="input-label" style="margin-top:12px;">Nombre <span class="input-optional">(opcional)</span></label>
+        <input class="text-input" type="text" id="nombre" placeholder="Tu nombre">
+        <label class="input-label" style="margin-top:10px;">WhatsApp <span class="input-optional">(opcional)</span></label>
+        <input class="text-input" type="tel" id="whatsapp" placeholder="+56 9 1234 5678">
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <div class="nav">
+      <button class="btn-prev" id="btn-prev" onclick="prevStep()" disabled>← Atrás</button>
+      <button class="btn-next" id="btn-next" onclick="nextStep()">Siguiente →</button>
+      <button class="btn-submit" id="btn-submit" style="display:none;" onclick="submitForm()">Enviar respuestas</button>
+    </div>
+  </div>
+
+  <!-- ══ SUCCESS ══ -->
+  <div id="success">
+    <div class="check-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M5 13l4 4L19 7" stroke="#8B7EC8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2>¡Gracias por compartir!</h2>
+    <p>Tu experiencia nos ayuda a construir algo que realmente funcione. Cuando tengamos algo listo, serás de los primeros en saberlo.</p>
+  </div>
+
+</div>
+
+<script>
+  const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwMIG1x9O-QpoKyQEEqG7SkLWDelmHGI_oqK4pm-PHSvwic7tTavi9zZbBkK8v0UVOX/exec';
+  const TOTAL_STEPS = 6;
+  let currentStep = 1;
+
+  function startForm() {
+    document.getElementById('intro').style.display = 'none';
+    document.getElementById('form-section').style.display = 'block';
+    updateProgress();
+  }
+
+  function noEmpece() {
+    const el = document.querySelector('input[name="termino"]:checked');
+    return el && el.value === 'no_empece';
+  }
+
+  function updateProgress() {
+    const pct = ((currentStep - 1) / TOTAL_STEPS) * 100;
+    document.getElementById('progress').style.width = pct + '%';
+    document.getElementById('step-label').textContent = 'Paso ' + currentStep + ' de ' + TOTAL_STEPS;
+    document.getElementById('btn-prev').disabled = currentStep === 1;
+    document.getElementById('btn-next').style.display = currentStep < TOTAL_STEPS ? 'block' : 'none';
+    document.getElementById('btn-submit').style.display = currentStep === TOTAL_STEPS ? 'block' : 'none';
+  }
+
+  function showStep(n) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-' + n).classList.add('active');
+    if (n === 5) updateStep5Variant();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateStep5Variant() {
+    const esNoEmpece = noEmpece();
+    document.getElementById('step5-normal').classList.toggle('visible', !esNoEmpece);
+    document.getElementById('step5-noempece').classList.toggle('visible', esNoEmpece);
+  }
+
+  function validate() {
+    if (currentStep === 1) {
+      const checked = document.querySelectorAll('input[name="zona"]:checked');
+      if (checked.length === 0) { document.getElementById('err-zona').classList.add('visible'); return false; }
+      document.getElementById('err-zona').classList.remove('visible');
+    }
+    if (currentStep === 2) {
+      if (!document.querySelector('input[name="postergacion"]:checked')) {
+        document.getElementById('err-postergacion').classList.add('visible'); return false;
+      }
+      document.getElementById('err-postergacion').classList.remove('visible');
+    }
+    if (currentStep === 3) {
+      if (!document.querySelector('input[name="termino"]:checked')) {
+        document.getElementById('err-termino').classList.add('visible'); return false;
+      }
+      document.getElementById('err-termino').classList.remove('visible');
+    }
+    if (currentStep === 4) {
+      if (!document.querySelector('input[name="en_casa"]:checked')) {
+        document.getElementById('err-en_casa').classList.add('visible'); return false;
+      }
+      document.getElementById('err-en_casa').classList.remove('visible');
+    }
+    if (currentStep === 6) {
+      if (!document.querySelector('input[name="formato"]:checked')) {
+        document.getElementById('err-formato').classList.add('visible'); return false;
+      }
+      document.getElementById('err-formato').classList.remove('visible');
+    }
+    return true;
+  }
+
+  function nextStep() {
+    if (!validate()) return;
+    currentStep++;
+    if (currentStep === 4 && noEmpece()) currentStep++;
+    showStep(currentStep);
+    updateProgress();
+  }
+
+  function prevStep() {
+    currentStep--;
+    if (currentStep === 4 && noEmpece()) currentStep--;
+    showStep(currentStep);
+    updateProgress();
+  }
+
+  function toggleMotivo(show) {
+    document.getElementById('motivo-abandono').classList.toggle('visible', show);
+  }
+
+  function collectData() {
+    const zonas      = [...document.querySelectorAll('input[name="zona"]:checked')].map(i => i.value).join(', ');
+    const postergacion = (document.querySelector('input[name="postergacion"]:checked') || {}).value || '';
+    const termino    = (document.querySelector('input[name="termino"]:checked') || {}).value || '';
+    const motivos    = [...document.querySelectorAll('input[name="motivo"]:checked')].map(i => i.value).join(', ');
+    const en_casa    = (document.querySelector('input[name="en_casa"]:checked') || {}).value || '';
+    const mejoras    = [...document.querySelectorAll('input[name="mejora"]:checked')].map(i => i.value).join(', ');
+    const varita     = noEmpece()
+      ? document.getElementById('varita-noempece').value.trim()
+      : document.getElementById('varita-normal').value.trim();
+    const formato    = (document.querySelector('input[name="formato"]:checked') || {}).value || '';
+    const genero     = document.getElementById('genero').value;
+    const edad       = document.getElementById('edad').value;
+    const nombre     = document.getElementById('nombre').value.trim();
+    const whatsapp   = document.getElementById('whatsapp').value.trim();
+
+    return {
+      formType: 'descubrimiento_mercado_v2',
+      zonas, postergacion, termino, motivos, en_casa,
+      mejoras, varita, formato, genero, edad, nombre, whatsapp
+    };
+  }
+
+  function submitForm() {
+    if (!validate()) return;
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    fetch(BACKEND_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify(collectData())
+    }).then(() => {
+      document.getElementById('form-section').style.display = 'none';
+      document.getElementById('success').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }).catch(() => {
+      btn.disabled = false;
+      btn.textContent = 'Enviar respuestas';
+      alert('Hubo un error al enviar. Intenta de nuevo.');
+    });
+  }
+</script>
+</body>
+</html>

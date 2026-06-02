@@ -108,6 +108,10 @@
     .step5-block { display: none; }
     .step5-block.visible { display: block; }
 
+    /* ── Step 6 variantes ── */
+    .step6-block { display: none; }
+    .step6-block.visible { display: block; }
+
     /* ── Nav ── */
     .nav { display: flex; gap: 10px; margin-top: 28px; }
     .btn-prev { flex: 1; padding: 13px; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; color: var(--charcoal); transition: background .18s; }
@@ -316,16 +320,34 @@
           <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#8B7EC8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <h2 class="step-title">¿Cómo te gustaría recuperarte?</h2>
-      <p class="step-desc">Si existiera la opción ideal, ¿cuál elegirías?</p>
-      <div class="q">
-        <div class="radio-col">
-          <label class="r-opt"><input type="radio" name="formato" value="presencial"><div><span class="r-opt-label">Ir 2 veces por semana a la clínica</span><span class="r-opt-sub">Presencial, con el especialista</span></div></label>
-          <label class="r-opt"><input type="radio" name="formato" value="online_guiado"><div><span class="r-opt-label">20 minutos diarios desde casa, con guía en video</span><span class="r-opt-sub">Sin traslados, a mi horario</span></div></label>
-          <label class="r-opt"><input type="radio" name="formato" value="domicilio"><div><span class="r-opt-label">Atención a domicilio</span><span class="r-opt-sub">Que vengan donde estoy</span></div></label>
-          <label class="r-opt"><input type="radio" name="formato" value="hibrido"><div><span class="r-opt-label">Una combinación de presencial y remoto</span><span class="r-opt-sub">Lo mejor de ambos mundos</span></div></label>
+      <!-- Versión A: tuvo experiencia o intentó algo -->
+      <div class="step6-block" id="step6-normal">
+        <h2 class="step-title">¿Cómo te gustaría recuperarte?</h2>
+        <p class="step-desc">Si existiera la opción ideal, ¿cuál elegirías?</p>
+        <div class="q">
+          <div class="radio-col">
+            <label class="r-opt"><input type="radio" name="formato" value="presencial"><div><span class="r-opt-label">Ir 2 veces por semana a la clínica</span><span class="r-opt-sub">Presencial, con el especialista</span></div></label>
+            <label class="r-opt"><input type="radio" name="formato" value="online_guiado"><div><span class="r-opt-label">20 minutos diarios desde casa, con guía en video</span><span class="r-opt-sub">Sin traslados, a mi horario</span></div></label>
+            <label class="r-opt"><input type="radio" name="formato" value="domicilio"><div><span class="r-opt-label">Atención a domicilio</span><span class="r-opt-sub">Que vengan donde estoy</span></div></label>
+            <label class="r-opt"><input type="radio" name="formato" value="hibrido"><div><span class="r-opt-label">Una combinación de presencial y remoto</span><span class="r-opt-sub">Lo mejor de ambos mundos</span></div></label>
+          </div>
+          <p class="error-msg" id="err-formato">Elige una opción para continuar.</p>
         </div>
-        <p class="error-msg" id="err-formato">Elige una opción para continuar.</p>
+      </div>
+
+      <!-- Versión B: nunca intentó nada -->
+      <div class="step6-block" id="step6-nada">
+        <h2 class="step-title">¿Qué te haría más fácil comenzar?</h2>
+        <p class="step-desc">Si existiera algo diseñado para ti, ¿cómo debería ser?</p>
+        <div class="q">
+          <div class="radio-col">
+            <label class="r-opt"><input type="radio" name="primer_paso" value="saber_que_hacer"><div><span class="r-opt-label">Saber exactamente qué hacer y cómo</span><span class="r-opt-sub">Un plan claro, paso a paso</span></div></label>
+            <label class="r-opt"><input type="radio" name="primer_paso" value="desde_casa"><div><span class="r-opt-label">Poder empezar desde casa</span><span class="r-opt-sub">Sin ir a ningún lado ni a nadie</span></div></label>
+            <label class="r-opt"><input type="radio" name="primer_paso" value="guia_humana"><div><span class="r-opt-label">Que alguien me orientara primero</span><span class="r-opt-sub">Una primera consulta sin compromiso</span></div></label>
+            <label class="r-opt"><input type="radio" name="primer_paso" value="entender_dolor"><div><span class="r-opt-label">Entender si mi dolor necesita tratamiento</span><span class="r-opt-sub">No sé si es tan grave como para ir</span></div></label>
+          </div>
+          <p class="error-msg" id="err-primer_paso">Elige una opción para continuar.</p>
+        </div>
       </div>
 
       <!-- Orden médica -->
@@ -414,6 +436,11 @@
     return el && el.value === 'no_empece';
   }
 
+  function soloNada() {
+    const checked = document.querySelectorAll('input[name="mejora"]:checked');
+    return noEmpece() && checked.length === 1 && checked[0].value === 'nada';
+  }
+
   function updateProgress() {
     const pct = ((currentStep - 1) / TOTAL_STEPS) * 100;
     document.getElementById('progress').style.width = pct + '%';
@@ -427,6 +454,7 @@
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
     document.getElementById('step-' + n).classList.add('active');
     if (n === 5) updateStep5Variant();
+    if (n === 6) updateStep6Variant();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -434,6 +462,12 @@
     const esNoEmpece = noEmpece();
     document.getElementById('step5-normal').classList.toggle('visible', !esNoEmpece);
     document.getElementById('step5-noempece').classList.toggle('visible', esNoEmpece);
+  }
+
+  function updateStep6Variant() {
+    const esNada = soloNada();
+    document.getElementById('step6-normal').classList.toggle('visible', !esNada);
+    document.getElementById('step6-nada').classList.toggle('visible', esNada);
   }
 
   function validate() {
@@ -461,10 +495,17 @@
       document.getElementById('err-en_casa').classList.remove('visible');
     }
     if (currentStep === 6) {
-      if (!document.querySelector('input[name="formato"]:checked')) {
-        document.getElementById('err-formato').classList.add('visible'); return false;
+      if (soloNada()) {
+        if (!document.querySelector('input[name="primer_paso"]:checked')) {
+          document.getElementById('err-primer_paso').classList.add('visible'); return false;
+        }
+        document.getElementById('err-primer_paso').classList.remove('visible');
+      } else {
+        if (!document.querySelector('input[name="formato"]:checked')) {
+          document.getElementById('err-formato').classList.add('visible'); return false;
+        }
+        document.getElementById('err-formato').classList.remove('visible');
       }
-      document.getElementById('err-formato').classList.remove('visible');
     }
     return true;
   }
@@ -498,7 +539,8 @@
     const varita     = noEmpece()
       ? document.getElementById('varita-noempece').value.trim()
       : document.getElementById('varita-normal').value.trim();
-    const formato    = (document.querySelector('input[name="formato"]:checked') || {}).value || '';
+    const formato     = (document.querySelector('input[name="formato"]:checked') || {}).value || '';
+    const primer_paso = (document.querySelector('input[name="primer_paso"]:checked') || {}).value || '';
     const orden_medica = (document.querySelector('input[name="orden_medica"]:checked') || {}).value || '';
     const genero     = document.getElementById('genero').value;
     const edad       = document.getElementById('edad').value;
@@ -508,7 +550,7 @@
     return {
       formType: 'descubrimiento_mercado_v2',
       zonas, postergacion, termino, motivos, en_casa,
-      mejoras, varita, formato, orden_medica, genero, edad, nombre, whatsapp
+      mejoras, varita, formato, primer_paso, orden_medica, genero, edad, nombre, whatsapp
     };
   }
 

@@ -431,9 +431,18 @@
     updateProgress();
   }
 
+  function noAplica() {
+    const el = document.querySelector('input[name="postergacion"]:checked');
+    return !!(el && el.value === 'no_aplica');
+  }
+
   function noEmpece() {
     const el = document.querySelector('input[name="termino"]:checked');
-    return el && el.value === 'no_empece';
+    return !!(el && el.value === 'no_empece');
+  }
+
+  function noTratamiento() {
+    return noAplica() || noEmpece();
   }
 
 function updateProgress() {
@@ -454,15 +463,15 @@ function updateProgress() {
   }
 
   function updateStep5Variant() {
-    const esNoEmpece = noEmpece();
-    document.getElementById('step5-normal').classList.toggle('visible', !esNoEmpece);
-    document.getElementById('step5-noempece').classList.toggle('visible', esNoEmpece);
+    const esSinTratamiento = noTratamiento();
+    document.getElementById('step5-normal').classList.toggle('visible', !esSinTratamiento);
+    document.getElementById('step5-noempece').classList.toggle('visible', esSinTratamiento);
   }
 
   function updateStep6Variant() {
-    const esNada = noEmpece();
-    document.getElementById('step6-normal').classList.toggle('visible', !esNada);
-    document.getElementById('step6-nada').classList.toggle('visible', esNada);
+    const esSinTratamiento = noTratamiento();
+    document.getElementById('step6-normal').classList.toggle('visible', !esSinTratamiento);
+    document.getElementById('step6-nada').classList.toggle('visible', esSinTratamiento);
   }
 
   function validate() {
@@ -490,7 +499,7 @@ function updateProgress() {
       document.getElementById('err-en_casa').classList.remove('visible');
     }
     if (currentStep === 6) {
-      if (noEmpece()) {
+      if (noTratamiento()) {
         if (!document.querySelector('input[name="primer_paso"]:checked')) {
           document.getElementById('err-primer_paso').classList.add('visible'); return false;
         }
@@ -508,14 +517,16 @@ function updateProgress() {
   function nextStep() {
     if (!validate()) return;
     currentStep++;
-    if (currentStep === 4 && noEmpece()) currentStep++;
+    if (currentStep === 3 && noAplica()) currentStep = 5;
+    else if (currentStep === 4 && noEmpece()) currentStep++;
     showStep(currentStep);
     updateProgress();
   }
 
   function prevStep() {
     currentStep--;
-    if (currentStep === 4 && noEmpece()) currentStep--;
+    if (currentStep === 4 && noTratamiento()) currentStep--;
+    if (currentStep === 3 && noAplica()) currentStep--;
     showStep(currentStep);
     updateProgress();
   }
@@ -531,7 +542,7 @@ function updateProgress() {
     const motivos    = [...document.querySelectorAll('input[name="motivo"]:checked')].map(i => i.value).join(', ');
     const en_casa    = (document.querySelector('input[name="en_casa"]:checked') || {}).value || '';
     const mejoras    = [...document.querySelectorAll('input[name="mejora"]:checked')].map(i => i.value).join(', ');
-    const varita     = noEmpece()
+    const varita     = noTratamiento()
       ? document.getElementById('varita-noempece').value.trim()
       : document.getElementById('varita-normal').value.trim();
     const formato     = (document.querySelector('input[name="formato"]:checked') || {}).value || '';

@@ -78,6 +78,26 @@ test.describe('Branching de pasos', () => {
     await expect(page.locator('#step-4')).not.toHaveClass(/active/);
   });
 
+  test('no_aplica: steps 3 y 4 se saltan, va directo a step 5', async ({ page }) => {
+    await start(page);
+    await completeStep1(page);
+    await page.check('input[name="postergacion"][value="no_aplica"]');
+    await page.click('#btn-next');
+    await expect(page.locator('#step-5')).toHaveClass(/active/);
+    await expect(page.locator('#step-3')).not.toHaveClass(/active/);
+    await expect(page.locator('#step-4')).not.toHaveClass(/active/);
+  });
+
+  test('no_aplica: "Atrás" desde step 5 regresa a step 2', async ({ page }) => {
+    await start(page);
+    await completeStep1(page);
+    await page.check('input[name="postergacion"][value="no_aplica"]');
+    await page.click('#btn-next');
+    await page.waitForSelector('#step-5.active');
+    await page.click('#btn-prev');
+    await expect(page.locator('#step-2')).toHaveClass(/active/);
+  });
+
   test('completó tratamiento: step 4 se muestra', async ({ page }) => {
     await start(page);
     await completeStep1(page);
@@ -145,6 +165,19 @@ test.describe('Variantes de step 6', () => {
     await navigateToStep6(page, { treatment: 'no_empece', mejora: null });
     await expect(page.locator('#step6-nada')).toBeVisible();
     await expect(page.locator('#step6-normal')).not.toBeVisible();
+  });
+
+  test('no_aplica: muestra "¿Qué te haría más fácil comenzar?"', async ({ page }) => {
+    const page2 = page;
+    await start(page2);
+    await completeStep1(page2);
+    await page2.check('input[name="postergacion"][value="no_aplica"]');
+    await page2.click('#btn-next');
+    await page2.waitForSelector('#step-5.active');
+    await page2.click('#btn-next');
+    await page2.waitForSelector('#step-6.active');
+    await expect(page2.locator('#step6-nada')).toBeVisible();
+    await expect(page2.locator('#step6-normal')).not.toBeVisible();
   });
 
   test('completó tratamiento: muestra "¿Cómo te gustaría recuperarte?"', async ({ page }) => {

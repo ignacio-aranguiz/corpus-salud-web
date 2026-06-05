@@ -1,0 +1,12 @@
+{
+  "name": "corpus-salud-web",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "serve": "^14.2.6"
+  }
+}

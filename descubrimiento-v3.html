@@ -436,12 +436,7 @@
     return el && el.value === 'no_empece';
   }
 
-  function soloNada() {
-    const checked = document.querySelectorAll('input[name="mejora"]:checked');
-    return noEmpece() && checked.length === 1 && checked[0].value === 'nada';
-  }
-
-  function updateProgress() {
+function updateProgress() {
     const pct = ((currentStep - 1) / TOTAL_STEPS) * 100;
     document.getElementById('progress').style.width = pct + '%';
     document.getElementById('step-label').textContent = 'Paso ' + currentStep + ' de ' + TOTAL_STEPS;
@@ -465,7 +460,7 @@
   }
 
   function updateStep6Variant() {
-    const esNada = soloNada();
+    const esNada = noEmpece();
     document.getElementById('step6-normal').classList.toggle('visible', !esNada);
     document.getElementById('step6-nada').classList.toggle('visible', esNada);
   }
@@ -495,7 +490,7 @@
       document.getElementById('err-en_casa').classList.remove('visible');
     }
     if (currentStep === 6) {
-      if (soloNada()) {
+      if (noEmpece()) {
         if (!document.querySelector('input[name="primer_paso"]:checked')) {
           document.getElementById('err-primer_paso').classList.add('visible'); return false;
         }

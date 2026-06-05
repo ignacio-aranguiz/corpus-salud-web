@@ -18,7 +18,7 @@ async function completeStep1(page) {
 }
 
 async function completeStep2(page) {
-  await page.check('input[name="postergacion"][value="no_busque"]');
+  await page.check('input[name="postergacion"][value="1_3_meses"]');
   await page.click('#btn-next');
   await page.waitForSelector('#step-3.active');
 }
@@ -75,6 +75,16 @@ test.describe('Branching de pasos', () => {
     await page.waitForSelector('#step-5.active');
     await page.click('#btn-prev');
     await expect(page.locator('#step-3')).toHaveClass(/active/);
+    await expect(page.locator('#step-4')).not.toHaveClass(/active/);
+  });
+
+  test('no_busque: steps 3 y 4 se saltan, va directo a step 5', async ({ page }) => {
+    await start(page);
+    await completeStep1(page);
+    await page.check('input[name="postergacion"][value="no_busque"]');
+    await page.click('#btn-next');
+    await expect(page.locator('#step-5')).toHaveClass(/active/);
+    await expect(page.locator('#step-3')).not.toHaveClass(/active/);
     await expect(page.locator('#step-4')).not.toHaveClass(/active/);
   });
 

@@ -433,7 +433,7 @@
 
   function noAplica() {
     const el = document.querySelector('input[name="postergacion"]:checked');
-    return !!(el && el.value === 'no_aplica');
+    return !!(el && (el.value === 'no_aplica' || el.value === 'no_busque'));
   }
 
   function noEmpece() {
